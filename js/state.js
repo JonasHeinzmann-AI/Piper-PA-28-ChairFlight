@@ -5,12 +5,13 @@ const DEFAULT_STATE = {
     battery: false,
     alternator: false,
     avionics: false,
+    fuelPump: false,  // electric (auxiliary) fuel pump
     voltage: 0,       // volts
     amperage: 0,      // amps
   },
   engine: {
     magnetos: 0,      // 0=OFF 1=R 2=L 3=BOTH 4=START
-    throttle: 0.02,   // 0–1  (idle/closed)
+    throttle: 0,      // 0–1  (idle/closed)
     mixture: 0,       // 0=CUTOFF, 1=RICH  — cold & dark = cut
     carbHeat: false,
     primerPumps: 0,
@@ -56,6 +57,10 @@ const DEFAULT_STATE = {
     nav1: { active: 113.600, standby: 108.000 },
     nav2: { active: 110.600, standby: 108.000 },
     xpdr: { code: 1200, mode: 'STBY', identActive: false },
+  },
+  nav: {
+    obs1: 270,         // OBS course selector (degrees)
+    vor1Radial: 90,    // simulated radial aircraft is currently on (FROM the VOR station)
   },
   circuitBreakers: {
     // name: tripped?

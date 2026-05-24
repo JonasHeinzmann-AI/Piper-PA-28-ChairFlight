@@ -49,17 +49,21 @@ function tickElectrical(dt) {
   }
 
   // Amperage (positive = charging, negative = discharging)
-  // CBs gate whether lights actually draw current
-  const lightsCb  = !state.circuitBreakers['LIGHTS'];
-  const pitotCb   = !state.circuitBreakers['PITOT HEAT'];
+  // CBs gate whether devices actually draw current
+  const lightsCb   = !state.circuitBreakers['LIGHTS'];
+  const pitotCb    = !state.circuitBreakers['PITOT HEAT'];
+  const fuelPumpCb = !state.circuitBreakers['FUEL PUMP'];
+  const pumpLoad   = state.electrical.fuelPump && fuelPumpCb ? 2 : 0;
   if (alt && eng) {
     state.electrical.amperage = 10
       + (state.lights.landing && lightsCb ? 5 : 0)
-      + (state.lights.pitotHeat && pitotCb ? 3 : 0);
+      + (state.lights.pitotHeat && pitotCb ? 3 : 0)
+      + pumpLoad;
   } else {
     state.electrical.amperage = -(3
       + (state.lights.nav && lightsCb ? 1 : 0)
-      + (state.lights.landing && lightsCb ? 5 : 0));
+      + (state.lights.landing && lightsCb ? 5 : 0)
+      + pumpLoad);
   }
 
   document.getElementById('ann-volt').classList.toggle('active', state.electrical.voltage < 12.5);

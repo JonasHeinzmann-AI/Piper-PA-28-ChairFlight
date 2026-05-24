@@ -44,6 +44,12 @@ function initToggles() {
     updateAvionicsState();
     showToast('Avionics Master: ' + (on ? 'ON' : 'OFF'));
   });
+  setupToggle('sw-fuel-pump', on => {
+    if (on && !state.electrical.battery) { showToast('Battery required for fuel pump.'); syncToggle('sw-fuel-pump', false); return; }
+    if (on && state.circuitBreakers['FUEL PUMP']) { showToast('FUEL PUMP CB tripped!'); syncToggle('sw-fuel-pump', false); return; }
+    state.electrical.fuelPump = on;
+    showToast('Electric Fuel Pump: ' + (on ? 'ON' : 'OFF'));
+  });
   setupToggle('sw-nav-light',   on => { state.lights.nav = on;       showToast('Nav Lights: '    + (on?'ON':'OFF')); });
   setupToggle('sw-land-light',  on => { state.lights.landing = on;   showToast('Landing Light: ' + (on?'ON':'OFF')); });
   setupToggle('sw-beacon',      on => { state.lights.beacon = on;    showToast('Beacon: '        + (on?'ON':'OFF')); });
@@ -301,6 +307,34 @@ function initKnobs() {
       state.flight.headingDeg = ((state.flight.headingDeg + (e.deltaY < 0 ? 1 : -1)) + 360) % 360;
     }, { passive: false });
   }
+
+  // OBS course selector (NAV1 VOR)
+  const obsKnob = document.getElementById('obs-knob');
+  if (obsKnob) {
+    obsKnob.addEventListener('wheel', e => {
+      e.preventDefault();
+      state.nav.obs1 = ((Math.round(state.nav.obs1) + (e.deltaY < 0 ? 1 : -1)) + 360) % 360;
+      const el = document.getElementById('obs-val');
+      if (el) el.textContent = state.nav.obs1.toString().padStart(3, '0') + '°';
+    }, { passive: false });
+    obsKnob.addEventListener('click', () => {
+      state.nav.obs1 = Math.round(state.flight.headingDeg % 360);
+      const el = document.getElementById('obs-val');
+      if (el) el.textContent = state.nav.obs1.toString().padStart(3, '0') + '°';
+      showToast('OBS → ' + state.nav.obs1 + '° (synced to HDG)');
+    });
+  }
+
+  // Simulated VOR radial (aircraft position relative to station)
+  const vorRadKnob = document.getElementById('vor1-radial-knob');
+  if (vorRadKnob) {
+    vorRadKnob.addEventListener('wheel', e => {
+      e.preventDefault();
+      state.nav.vor1Radial = ((Math.round(state.nav.vor1Radial) + (e.deltaY < 0 ? 1 : -1)) + 360) % 360;
+      const el = document.getElementById('vor1-radial-val');
+      if (el) el.textContent = state.nav.vor1Radial.toString().padStart(3, '0') + '°';
+    }, { passive: false });
+  }
 }
 
 /* ── Radio tuning ────────────────────────────────────────── */
@@ -544,6 +578,7 @@ function syncAllFromState() {
   syncToggle('sw-battery',    state.electrical.battery);
   syncToggle('sw-alternator', state.electrical.alternator);
   syncToggle('sw-avionics',   state.electrical.avionics);
+  syncToggle('sw-fuel-pump',  state.electrical.fuelPump);
   syncToggle('sw-nav-light',   state.lights.nav);
   syncToggle('sw-land-light',  state.lights.landing);
   syncToggle('sw-beacon',      state.lights.beacon);
@@ -576,6 +611,11 @@ function syncAllFromState() {
 
   const trimN = document.getElementById('trim-needle');
   if (trimN) trimN.style.top = state.trimPct + '%';
+
+  const obsEl = document.getElementById('obs-val');
+  if (obsEl) obsEl.textContent = Math.round(state.nav.obs1).toString().padStart(3, '0') + '°';
+  const radEl = document.getElementById('vor1-radial-val');
+  if (radEl) radEl.textContent = Math.round(state.nav.vor1Radial).toString().padStart(3, '0') + '°';
 
   updateAvionicsState();
   buildCBPanel();

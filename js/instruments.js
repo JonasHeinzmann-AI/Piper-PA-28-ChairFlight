@@ -353,15 +353,70 @@ function drawG5HSI(hasPower, headingDeg) {
   }
   ctx.restore();
 
-  // CDI / course pointer (magenta)
-  ctx.save();
-  ctx.strokeStyle='#d040d0'; ctx.lineWidth=2; ctx.lineCap='round';
-  const cpTip=polar(cx,cy,R-18,0), cpTail=polar(cx,cy,R-28,180);
-  ctx.beginPath(); ctx.moveTo(cpTail.x,cpTail.y); ctx.lineTo(cpTip.x,cpTip.y); ctx.stroke();
+  // ── VOR CDI — course pointer + deviation needle ───────────
+  const normA = a => ((a % 360) + 540) % 360 - 180;
+  const obs1 = state.nav.obs1;
+  const radial = state.nav.vor1Radial;
+  // Signed angular error between current position and on-course position
+  const courseError = normA(radial - (obs1 + 180) % 360);
+  // TO when OBS ≈ bearing to station (|diff| < 90°)
+  const isTO = Math.abs(normA(obs1 - (radial + 180) % 360)) < 90;
+  const cdiDevRaw = Math.max(-1, Math.min(1, -courseError / 10));
+  const cdiDev = isTO ? cdiDevRaw : -cdiDevRaw; // FROM reverses sensing
+
+  // OBS direction on screen, relative to lubber line (current heading = up)
+  const obsAng = ((obs1 - headingDeg) % 360 + 360) % 360;
+  const cpRad   = (obsAng - 90) * DEG;           // canvas radians (0°=right, -90°=up)
+  const perpRad = cpRad + Math.PI / 2;            // perpendicular = deflection axis
+  const MAX_DEV = 22;                             // pixels for full-scale (±10°) deflection
+  const devX = cdiDev * MAX_DEV * Math.cos(perpRad);
+  const devY = cdiDev * MAX_DEV * Math.sin(perpRad);
+
+  // Deviation reference dots (±1 and ±2 dots; 1 dot = 5° = MAX_DEV/2 px)
+  ctx.save(); ctx.strokeStyle = '#3a3a4a'; ctx.lineWidth = 1;
+  for (const d of [-2, -1, 1, 2]) {
+    const dOff = d * (MAX_DEV / 2);
+    ctx.beginPath();
+    ctx.arc(cx + dOff * Math.cos(perpRad), cy + dOff * Math.sin(perpRad), 2.5, 0, TAU);
+    ctx.stroke();
+  }
+  ctx.restore();
+
+  // Course baseline (dashed dim magenta — the reference line through center)
+  const bTip  = polar(cx, cy, R - 10, obsAng);
+  const bTail = polar(cx, cy, R - 10, obsAng + 180);
+  ctx.save(); ctx.strokeStyle = '#5a1a5a'; ctx.lineWidth = 1.5;
+  ctx.setLineDash([3, 5]);
+  ctx.beginPath(); ctx.moveTo(bTail.x, bTail.y); ctx.lineTo(bTip.x, bTip.y); ctx.stroke();
+  ctx.setLineDash([]); ctx.restore();
+
+  // CDI needle (bright magenta bar, parallel to course, offset by deviation)
+  const nHalf = 26;
+  const nx = cx + devX, ny = cy + devY;
+  const nTipX  = nx + nHalf * Math.cos(cpRad), nTipY  = ny + nHalf * Math.sin(cpRad);
+  const nTailX = nx - nHalf * Math.cos(cpRad), nTailY = ny - nHalf * Math.sin(cpRad);
+  ctx.save(); ctx.strokeStyle = '#e040e0'; ctx.lineWidth = 3; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(nTailX, nTailY); ctx.lineTo(nTipX, nTipY); ctx.stroke();
+  // Arrowhead at tip
+  const aL = 9, aA = 0.45;
+  ctx.lineWidth = 2.5;
   ctx.beginPath();
-  ctx.moveTo(cpTip.x,cpTip.y); ctx.lineTo(polar(cx,cy,R-28,-8).x,polar(cx,cy,R-28,-8).y);
-  ctx.moveTo(cpTip.x,cpTip.y); ctx.lineTo(polar(cx,cy,R-28,8).x,polar(cx,cy,R-28,8).y);
+  ctx.moveTo(nTipX, nTipY);
+  ctx.lineTo(nTipX - aL * Math.cos(cpRad - aA), nTipY - aL * Math.sin(cpRad - aA));
+  ctx.moveTo(nTipX, nTipY);
+  ctx.lineTo(nTipX - aL * Math.cos(cpRad + aA), nTipY - aL * Math.sin(cpRad + aA));
   ctx.stroke();
+  ctx.restore();
+
+  // TO / FROM flag
+  ctx.save();
+  ctx.fillStyle = isTO ? '#001800' : '#180a00';
+  ctx.strokeStyle = isTO ? '#0a3a0a' : '#3a1800'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.roundRect(cx - R * 0.62, cy - 9, 28, 16, 2); ctx.fill(); ctx.stroke();
+  txt(ctx, cx - R * 0.62 + 14, cy - 1, isTO ? 'TO' : 'FR', {
+    fillStyle: isTO ? '#00dd44' : '#ffaa00',
+    font: `bold ${S * 0.078}px Courier New`
+  });
   ctx.restore();
 
   // Aircraft symbol

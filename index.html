@@ -97,13 +97,27 @@
 
         </div><!-- end six-pack -->
 
-        <!-- Sub-panel below 6-pack: annunciators -->
+        <!-- Sub-panel below 6-pack: annunciators + VOR sim -->
         <div id="left-sub-panel">
           <div class="sub-ann-row">
             <div class="sub-ann" title="Low voltage">LOW VOLT</div>
             <div class="sub-ann active-green" id="sub-ann-gear">GEAR DN</div>
             <div class="sub-ann" id="sub-ann-stall" title="Stall">STALL</div>
             <div class="sub-ann" id="sub-ann-door" title="Door">DOOR</div>
+          </div>
+          <div id="vor-sim-strip">
+            <span class="vor-sim-title">NAV1 VOR SIM</span>
+            <div class="vor-sim-ctrl">
+              <span class="vor-sim-lbl">OBS</span>
+              <span class="vor-sim-val" id="obs-val">270°</span>
+              <div class="vor-sim-knob" id="obs-knob" title="Scroll = set OBS course · Click = sync to heading">⟲</div>
+            </div>
+            <div class="vor-sim-ctrl">
+              <span class="vor-sim-lbl">RADIAL</span>
+              <span class="vor-sim-val" id="vor1-radial-val">090°</span>
+              <div class="vor-sim-knob" id="vor1-radial-knob" title="Scroll = set simulated VOR radial (your position)">⟲</div>
+            </div>
+            <span class="vor-sim-hint">CDI on HSI ↑</span>
           </div>
         </div>
 
@@ -283,6 +297,13 @@
               <div class="toggle-label">AVIONICS</div>
               <div class="toggle-switch" id="sw-avionics" data-state="off"><div class="toggle-lever"></div></div>
               <div class="toggle-sublabel">AV MSTR</div>
+            </div>
+          </div>
+          <div class="switch-row" style="margin-top:6px">
+            <div class="toggle-group" style="width:100%">
+              <div class="toggle-label">FUEL PUMP</div>
+              <div class="toggle-switch" id="sw-fuel-pump" data-state="off"><div class="toggle-lever"></div></div>
+              <div class="toggle-sublabel">ELEC</div>
             </div>
           </div>
         </div>
@@ -513,8 +534,10 @@
         <div class="cl-item"><input type="checkbox"><label>Mixture — RICH</label></div>
         <div class="cl-item"><input type="checkbox"><label>Carb Heat — COLD</label></div>
         <div class="cl-item"><input type="checkbox"><label>Throttle — 1/4 inch open (~15%)</label></div>
+        <div class="cl-item"><input type="checkbox"><label>Electric Fuel Pump — ON</label></div>
         <div class="cl-item"><input type="checkbox"><label>Primer — 2–6 pumps (cold engine), lock in</label></div>
         <div class="cl-item"><input type="checkbox"><label>Magneto — START, release to BOTH on fire</label></div>
+        <div class="cl-item"><input type="checkbox"><label>Electric Fuel Pump — OFF (after start, oil pressure confirmed)</label></div>
         <div class="cl-item"><input type="checkbox"><label>Oil pressure — check (rise within 30 sec)</label></div>
         <div class="cl-item"><input type="checkbox"><label>Avionics Master — ON</label></div>
         <div class="cl-item"><input type="checkbox"><label>G5 PFD / G5 HSI — initialise (30 sec)</label></div>
@@ -569,6 +592,7 @@
 <!-- Toast -->
 <div id="toast"></div>
 
+<script src="js/audio.js"></script>
 <script src="js/state.js"></script>
 <script src="js/instruments.js"></script>
 <script src="js/systems.js"></script>
