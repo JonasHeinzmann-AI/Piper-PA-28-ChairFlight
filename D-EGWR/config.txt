@@ -1,0 +1,19 @@
+Ausstattung
+Garmin G5 PFD	
+Operable
+Garmin G5 HSI	
+Operable
+Garmin 430	
+Operable
+MKR (King KMA-20)	
+Operable
+DME (King KN-62A)	
+Operable
+Transponder Mode-S (Garmin GTX-330)	
+Operable
+ELT (AK-451, 406 MHz)	
+Operable
+TRX-2000 Powerflarm	
+Operable
+4er Intercom	
+Operable

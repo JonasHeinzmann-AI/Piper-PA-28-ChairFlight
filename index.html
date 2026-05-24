@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>D-EGWR · Piper PA-28-161 Warrior II</title>
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+<div id="app">
+
+  <!-- ── Save Bar ─────────────────────────────────────────── -->
+  <div id="save-bar">
+    <div class="save-bar-left">
+      <span class="aircraft-id">D-EGWR · Piper PA-28-161 Warrior II · 1978 · 160 PS</span>
+    </div>
+    <div class="save-bar-right">
+      <select id="save-slot-select"><option value="1">Slot 1</option><option value="2">Slot 2</option><option value="3">Slot 3</option><option value="4">Slot 4</option><option value="5">Slot 5</option></select>
+      <button id="btn-save" class="save-btn">💾 Save</button>
+      <button id="btn-load" class="save-btn">📂 Load</button>
+      <button id="btn-reset" class="save-btn reset-btn">↺ Cold &amp; Dark</button>
+      <button id="btn-checklist" class="save-btn">☑ Checklist</button>
+      <button id="btn-help" class="save-btn">? Keys</button>
+      <span id="save-status"></span>
+    </div>
+  </div>
+
+  <!-- ── Cockpit ───────────────────────────────────────────── -->
+  <div id="cockpit">
+
+    <!-- GLARESHIELD -->
+    <div id="glareshield">
+      <div class="ann-group">
+        <div class="annunciator" id="ann-oil" title="Low Oil Pressure">OIL PRESS</div>
+        <div class="annunciator" id="ann-lowfuel" title="Low Fuel">LOW FUEL</div>
+        <div class="annunciator warn" id="ann-mast-warn" title="Master Warning">MASTER WARN</div>
+      </div>
+      <div class="gs-center">
+        <div class="compass-rose-badge">D-EGWR</div>
+        <div class="gs-model">PA-28-161 WARRIOR II</div>
+      </div>
+      <div class="ann-group">
+        <div class="annunciator" id="ann-volt" title="Low Voltage">LOW VOLT</div>
+        <div class="annunciator" id="ann-pitot" title="Pitot Heat Off">PITOT HEAT</div>
+        <div class="annunciator green" id="ann-gear" title="Gear Down &amp; Locked">GEAR DOWN</div>
+      </div>
+    </div>
+
+    <!-- ── MAIN PANEL ─────────────────────────────────────── -->
+    <div id="main-panel">
+
+      <!-- LEFT: Flight Instruments (6-pack) -->
+      <div id="six-pack-section">
+        <div id="six-pack">
+
+          <!-- ROW 1 -->
+          <div class="instrument-cell">
+            <div class="instr-label-top">AIRSPEED <span class="unit">KIAS</span></div>
+            <div class="instr-bezel">
+              <canvas id="asi" width="190" height="190"></canvas>
+            </div>
+          </div>
+          <div class="instrument-cell">
+            <div class="instr-label-top g5-label">GARMIN G5 <span class="unit">PFD</span></div>
+            <div class="instr-bezel g5-bezel">
+              <canvas id="ai" width="190" height="190"></canvas>
+            </div>
+          </div>
+          <div class="instrument-cell">
+            <div class="instr-label-top">ALTIMETER <span class="unit">FT</span></div>
+            <div class="instr-bezel" style="position:relative">
+              <canvas id="alt" width="190" height="190"></canvas>
+              <div class="baro-knob" id="baro-knob" title="Scroll=adjust, Click=STD 29.92">⟲</div>
+            </div>
+          </div>
+
+          <!-- ROW 2 -->
+          <div class="instrument-cell">
+            <div class="instr-label-top">TURN COORD <span class="unit">2 MIN</span></div>
+            <div class="instr-bezel">
+              <canvas id="tc" width="190" height="190"></canvas>
+            </div>
+          </div>
+          <div class="instrument-cell">
+            <div class="instr-label-top g5-label">GARMIN G5 <span class="unit">HSI</span></div>
+            <div class="instr-bezel g5-bezel" style="position:relative">
+              <canvas id="hi" width="190" height="190"></canvas>
+              <div class="hi-knob" id="hi-knob" title="Scroll to sync">⟲</div>
+            </div>
+          </div>
+          <div class="instrument-cell">
+            <div class="instr-label-top">VERT SPEED <span class="unit">×100 FPM</span></div>
+            <div class="instr-bezel">
+              <canvas id="vsi" width="190" height="190"></canvas>
+            </div>
+          </div>
+
+        </div><!-- end six-pack -->
+
+        <!-- Sub-panel below 6-pack: annunciators -->
+        <div id="left-sub-panel">
+          <div class="sub-ann-row">
+            <div class="sub-ann" title="Low voltage">LOW VOLT</div>
+            <div class="sub-ann active-green" id="sub-ann-gear">GEAR DN</div>
+            <div class="sub-ann" id="sub-ann-stall" title="Stall">STALL</div>
+            <div class="sub-ann" id="sub-ann-door" title="Door">DOOR</div>
+          </div>
+        </div>
+
+      </div><!-- end six-pack-section -->
+
+      <!-- CENTER: Avionics Stack -->
+      <div id="avionics-section">
+
+        <!-- KMA-20 Audio Panel -->
+        <div class="avio-unit" id="kma20-unit">
+          <div class="avio-label">KING KMA-20 AUDIO PANEL</div>
+          <div class="kma20-body">
+            <div class="kma20-toggles">
+              <div class="audio-toggle-group"><span class="at-label">COM1</span><div class="at-btn active-at" id="at-com1"></div></div>
+              <div class="audio-toggle-group"><span class="at-label">COM2</span><div class="at-btn" id="at-com2"></div></div>
+              <div class="audio-toggle-group"><span class="at-label">NAV1</span><div class="at-btn" id="at-nav1"></div></div>
+              <div class="audio-toggle-group"><span class="at-label">NAV2</span><div class="at-btn" id="at-nav2"></div></div>
+              <div class="audio-toggle-group"><span class="at-label">MKR</span><div class="at-btn" id="at-mkr"></div></div>
+              <div class="audio-toggle-group"><span class="at-label">SPKR</span><div class="at-btn" id="at-spkr"></div></div>
+            </div>
+            <div class="kma20-vol">
+              <span class="vol-label">VOL</span>
+              <input type="range" class="vol-slider" id="kma-vol" min="0" max="100" value="75">
+            </div>
+          </div>
+        </div>
+
+        <!-- Garmin GNS 430 -->
+        <div class="avio-unit garmin-430-unit" id="g430-unit">
+          <div class="avio-label">GARMIN GNS 430</div>
+          <div class="g430-body">
+            <div class="g430-left-btns">
+              <button class="g430-btn" data-fn="dir">D→</button>
+              <button class="g430-btn" data-fn="menu">MENU</button>
+              <button class="g430-btn" data-fn="clr">CLR</button>
+              <button class="g430-btn" data-fn="ent">ENT</button>
+            </div>
+            <div class="g430-display-area">
+              <canvas id="g430-canvas" width="220" height="88"></canvas>
+            </div>
+            <div class="g430-right-btns">
+              <button class="g430-btn g430-flip" data-unit="com1">COM↕</button>
+              <button class="g430-btn g430-flip" data-unit="nav1">NAV↕</button>
+              <div class="g430-knobs">
+                <div class="g430-mode-label" id="g430-mode-label">COM1</div>
+                <div class="g430-knob-outer" id="g430-outer" title="Scroll = ±MHz · Click = toggle COM1/NAV1">
+                  <div class="g430-knob-inner" id="g430-inner" title="Scroll = ±kHz · Click = flip active↔stby">◉</div>
+                </div>
+                <div class="g430-knob-hint">MHz·kHz</div>
+              </div>
+            </div>
+          </div>
+          <!-- COM/NAV frequencies below -->
+          <div class="g430-freqs">
+            <div class="g430-freq-row">
+              <span class="gf-label">COM</span>
+              <span class="gf-act" id="com1-active">118.000</span>
+              <span class="gf-arr">⇒</span>
+              <span class="gf-stby" id="com1-standby">121.500</span>
+              <button class="gf-flip flip-btn" data-unit="com1">FLIP</button>
+            </div>
+            <div class="g430-freq-row">
+              <span class="gf-label">NAV</span>
+              <span class="gf-act" id="nav1-active">113.600</span>
+              <span class="gf-arr">⇒</span>
+              <span class="gf-stby" id="nav1-standby">108.000</span>
+              <button class="gf-flip flip-btn" data-unit="nav1">FLIP</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- COM2 / NAV2 Radio -->
+        <div class="avio-unit radio-unit-dark" id="com2-unit">
+          <div class="avio-label">COM 2 / NAV 2</div>
+          <div class="dual-radio-body">
+            <div class="dr-row">
+              <span class="dr-label">COM2</span>
+              <span class="dr-display"><span class="radio-active" id="com2-active">119.900</span><span class="radio-arrow">⇒</span><span class="radio-standby" id="com2-standby">122.800</span></span>
+              <button class="flip-btn small-flip" data-unit="com2">↕</button>
+              <div class="tune-btns">
+                <button class="rk-btn" data-unit="com2" data-knob="mhz-dn">−</button>
+                <button class="rk-btn" data-unit="com2" data-knob="mhz-up">+</button>
+                <button class="rk-btn" data-unit="com2" data-knob="khz-dn">◂</button>
+                <button class="rk-btn" data-unit="com2" data-knob="khz-up">▸</button>
+              </div>
+            </div>
+            <div class="dr-row">
+              <span class="dr-label">NAV2</span>
+              <span class="dr-display"><span class="radio-active" id="nav2-active">110.600</span><span class="radio-arrow">⇒</span><span class="radio-standby" id="nav2-standby">108.000</span></span>
+              <button class="flip-btn small-flip" data-unit="nav2">↕</button>
+              <div class="tune-btns">
+                <button class="rk-btn" data-unit="nav2" data-knob="mhz-dn">−</button>
+                <button class="rk-btn" data-unit="nav2" data-knob="mhz-up">+</button>
+                <button class="rk-btn" data-unit="nav2" data-knob="khz-dn">◂</button>
+                <button class="rk-btn" data-unit="nav2" data-knob="khz-up">▸</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- King KN-62A DME -->
+        <div class="avio-unit" id="dme-unit">
+          <div class="avio-label">KING KN-62A DME</div>
+          <div class="dme-body">
+            <div class="dme-display">
+              <span class="dme-val" id="dme-dist">---.-</span><span class="dme-unit">NM</span>
+              <span class="dme-val" id="dme-gs">---</span><span class="dme-unit">KT</span>
+              <span class="dme-val" id="dme-time">--:--</span><span class="dme-unit">MIN</span>
+            </div>
+            <div class="dme-controls">
+              <select class="dme-sel" id="dme-mode"><option>NAV1</option><option>NAV2</option><option>OFF</option></select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Garmin GTX-330 Transponder -->
+        <div class="avio-unit gtx-unit" id="gtx330-unit">
+          <div class="avio-label">GARMIN GTX-330 XPDR</div>
+          <div class="gtx-body">
+            <div class="gtx-display">
+              <span class="gtx-code" id="xpdr-code">1200</span>
+              <span class="gtx-fl" id="gtx-fl">FL---</span>
+            </div>
+            <div class="gtx-controls">
+              <select id="xpdr-mode" class="gtx-mode-sel">
+                <option value="OFF">OFF</option>
+                <option value="STBY" selected>STBY</option>
+                <option value="ON">ON</option>
+                <option value="ALT">ALT</option>
+                <option value="GND">GND</option>
+              </select>
+              <div class="gtx-tune">
+                <button class="rk-btn" data-unit="xpdr" data-knob="dn">◂</button>
+                <button class="rk-btn" data-unit="xpdr" data-knob="up">▸</button>
+              </div>
+              <button class="ident-btn" id="xpdr-ident">IDENT</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- PowerFLARM TRX-2000 -->
+        <div class="avio-unit flarm-unit" id="flarm-unit">
+          <div class="avio-label">POWERFLARM TRX-2000</div>
+          <div class="flarm-body">
+            <div class="flarm-display">
+              <span class="flarm-status" id="flarm-status">INITIALIZING…</span>
+            </div>
+            <div class="flarm-btns">
+              <button class="g430-btn" id="flarm-power">PWR</button>
+              <span class="flarm-traffic" id="flarm-traffic">0 TRAFFIC</span>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- end avionics-section -->
+
+      <!-- RIGHT: Switches Panel -->
+      <div id="right-section">
+
+        <!-- MASTER SWITCHES -->
+        <div class="switch-box">
+          <div class="switch-box-title">MASTER SWITCH</div>
+          <div class="switch-row">
+            <div class="toggle-group">
+              <div class="toggle-label">BAT</div>
+              <div class="toggle-switch" id="sw-battery" data-state="off"><div class="toggle-lever"></div></div>
+              <div class="toggle-sublabel">BATT</div>
+            </div>
+            <div class="toggle-group">
+              <div class="toggle-label">ALT</div>
+              <div class="toggle-switch" id="sw-alternator" data-state="off"><div class="toggle-lever"></div></div>
+              <div class="toggle-sublabel">ALT</div>
+            </div>
+          </div>
+          <div class="switch-row" style="margin-top:6px">
+            <div class="toggle-group" style="width:100%">
+              <div class="toggle-label">AVIONICS</div>
+              <div class="toggle-switch" id="sw-avionics" data-state="off"><div class="toggle-lever"></div></div>
+              <div class="toggle-sublabel">AV MSTR</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MAGNETO -->
+        <div class="switch-box">
+          <div class="switch-box-title">IGNITION</div>
+          <div class="rotary-wrap">
+            <canvas id="magneto-switch" width="110" height="110" title="L-click=advance, R-click=retard, Scroll"></canvas>
+            <div class="rotary-pos" id="mag-label">OFF</div>
+          </div>
+        </div>
+
+        <!-- PRIMER -->
+        <div class="switch-box">
+          <div class="switch-box-title">PRIMER</div>
+          <div class="primer-wrap">
+            <button class="primer-btn" id="primer-pull">PULL / PUMP</button>
+            <div class="primer-count" id="primer-count">0 pumps</div>
+            <button class="primer-btn locked" id="primer-push" disabled>PUSH IN &amp; LOCK</button>
+          </div>
+        </div>
+
+        <!-- LIGHTS -->
+        <div class="switch-box">
+          <div class="switch-box-title">LIGHTS</div>
+          <div class="lights-grid">
+            <div class="toggle-group sm">
+              <div class="toggle-label">NAV</div>
+              <div class="toggle-switch" id="sw-nav-light" data-state="off"><div class="toggle-lever"></div></div>
+            </div>
+            <div class="toggle-group sm">
+              <div class="toggle-label">LAND</div>
+              <div class="toggle-switch" id="sw-land-light" data-state="off"><div class="toggle-lever"></div></div>
+            </div>
+            <div class="toggle-group sm">
+              <div class="toggle-label">BCN</div>
+              <div class="toggle-switch" id="sw-beacon" data-state="off"><div class="toggle-lever"></div></div>
+            </div>
+            <div class="toggle-group sm">
+              <div class="toggle-label">STRB</div>
+              <div class="toggle-switch" id="sw-strobes" data-state="off"><div class="toggle-lever"></div></div>
+            </div>
+            <div class="toggle-group sm">
+              <div class="toggle-label">PANEL</div>
+              <div class="toggle-switch" id="sw-panel-light" data-state="off"><div class="toggle-lever"></div></div>
+            </div>
+            <div class="toggle-group sm">
+              <div class="toggle-label">PITOT</div>
+              <div class="toggle-switch" id="sw-pitot-heat" data-state="off"><div class="toggle-lever"></div></div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- end right-section -->
+
+    </div><!-- end main-panel -->
+
+    <!-- ── LOWER PANEL ────────────────────────────────────── -->
+    <div id="lower-panel">
+
+      <!-- LOWER LEFT: Engine gauges + sub-switches -->
+      <div id="lower-left">
+        <div class="lower-section-title">ENGINE INSTRUMENTS</div>
+        <div class="eng-gauges-grid">
+          <div class="eng-cell">
+            <div class="instr-bezel small-bezel"><canvas id="tach" width="120" height="120"></canvas></div>
+            <div class="eng-label">TACH RPM</div>
+          </div>
+          <div class="eng-cell">
+            <div class="instr-bezel small-bezel"><canvas id="oil-press" width="120" height="120"></canvas></div>
+            <div class="eng-label">OIL PSI</div>
+          </div>
+          <div class="eng-cell">
+            <div class="instr-bezel small-bezel"><canvas id="oil-temp" width="120" height="120"></canvas></div>
+            <div class="eng-label">OIL °F</div>
+          </div>
+          <div class="eng-cell">
+            <div class="instr-bezel small-bezel"><canvas id="fuel-left" width="120" height="120"></canvas></div>
+            <div class="eng-label">FUEL L</div>
+          </div>
+          <div class="eng-cell">
+            <div class="instr-bezel small-bezel"><canvas id="fuel-right" width="120" height="120"></canvas></div>
+            <div class="eng-label">FUEL R</div>
+          </div>
+          <div class="eng-cell">
+            <div class="instr-bezel small-bezel"><canvas id="ammeter" width="120" height="120"></canvas></div>
+            <div class="eng-label">AMMETER A</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- LOWER CENTER: Fuel selector + Throttle quadrant -->
+      <div id="lower-center">
+
+        <div id="fuel-selector-box" class="switch-box">
+          <div class="switch-box-title">FUEL SELECTOR</div>
+          <div class="fuel-sel-wrap">
+            <canvas id="fuel-selector" width="110" height="110" title="Click or scroll to change"></canvas>
+            <div class="fuel-sel-label" id="fuel-sel-label">BOTH</div>
+          </div>
+        </div>
+
+        <div id="throttle-quadrant">
+          <div class="quad-title">THROTTLE QUADRANT</div>
+          <div class="levers-wrap">
+
+            <div class="lever-assy">
+              <div class="lever-name">THROTTLE</div>
+              <div class="lever-track" id="throttle-track">
+                <div class="lever-knob" id="throttle-lever" style="bottom:5%">
+                  <div class="lever-grip black-grip"></div>
+                </div>
+              </div>
+              <div class="lever-val" id="throttle-pct">5%</div>
+            </div>
+
+            <div class="lever-assy">
+              <div class="lever-name">MIXTURE</div>
+              <div class="lever-track" id="mixture-track">
+                <div class="lever-knob" id="mixture-lever" style="bottom:90%">
+                  <div class="lever-grip red-grip"></div>
+                </div>
+              </div>
+              <div class="lever-val" id="mixture-pct">RICH</div>
+            </div>
+
+            <div class="lever-assy">
+              <div class="lever-name">CARB HEAT</div>
+              <div class="lever-track" id="carbheat-track">
+                <div class="lever-knob" id="carbheat-lever" style="bottom:5%">
+                  <div class="lever-grip white-grip"></div>
+                </div>
+              </div>
+              <div class="lever-val" id="carbheat-pct">COLD</div>
+            </div>
+
+          </div>
+        </div>
+
+        <div id="park-trim-box">
+          <div class="switch-box" style="flex:1">
+            <div class="switch-box-title">PARK BRAKE</div>
+            <div class="park-brake-wrap">
+              <div class="park-handle" id="park-brake" data-state="off" title="Click to toggle">
+                <div class="park-grip">▐▌</div>
+                <div class="park-label" id="park-brake-label">OFF</div>
+              </div>
+            </div>
+          </div>
+          <div class="switch-box" style="flex:1">
+            <div class="switch-box-title">FLAPS</div>
+            <div class="flap-btns">
+              <button class="flap-btn active-flap" data-flaps="0">UP<br><small>0°</small></button>
+              <button class="flap-btn" data-flaps="10">T/O<br><small>10°</small></button>
+              <button class="flap-btn" data-flaps="25">APP<br><small>25°</small></button>
+              <button class="flap-btn" data-flaps="40">LDG<br><small>40°</small></button>
+            </div>
+            <div class="flap-bar-wrap">
+              <div class="flap-bar"><div class="flap-needle" id="flap-needle"></div></div>
+              <div class="flap-bar-labels"><span>0</span><span>10</span><span>25</span><span>40</span></div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- end lower-center -->
+
+      <!-- LOWER RIGHT: Circuit Breakers + Trim -->
+      <div id="lower-right">
+        <div class="lower-section-title">CIRCUIT BREAKERS</div>
+        <div class="cb-grid" id="cb-panel"></div>
+
+        <div class="switch-box" style="margin-top:8px">
+          <div class="switch-box-title">ELEVATOR TRIM</div>
+          <div class="trim-wrap">
+            <button class="trim-btn" id="trim-nose-up">▲ NOSE UP</button>
+            <div class="trim-track">
+              <div class="trim-needle" id="trim-needle" style="top:50%"></div>
+              <div class="trim-marks">
+                <span>NU</span><span>TAXI</span><span>ND</span>
+              </div>
+            </div>
+            <button class="trim-btn" id="trim-nose-dn">▼ NOSE DN</button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end lower-panel -->
+
+    <!-- STATUS BAR -->
+    <div id="status-bar">
+      <div class="st-item"><span class="st-lbl">ENGINE</span><span id="st-engine" class="st-val off">OFF</span></div>
+      <div class="st-item"><span class="st-lbl">RPM</span><span id="st-rpm" class="st-val">0</span></div>
+      <div class="st-item"><span class="st-lbl">IAS</span><span id="st-ias" class="st-val">0 kt</span></div>
+      <div class="st-item"><span class="st-lbl">ALT</span><span id="st-alt" class="st-val">1,000 ft</span></div>
+      <div class="st-item"><span class="st-lbl">HDG</span><span id="st-hdg" class="st-val">360°</span></div>
+      <div class="st-item"><span class="st-lbl">FUEL L</span><span id="st-fuel-l" class="st-val">24.0 gal</span></div>
+      <div class="st-item"><span class="st-lbl">FUEL R</span><span id="st-fuel-r" class="st-val">24.0 gal</span></div>
+      <div class="st-item"><span class="st-lbl">OIL °F</span><span id="st-oil" class="st-val">60</span></div>
+      <div class="st-item"><span class="st-lbl">BARO</span><span id="st-baro" class="st-val">29.92</span></div>
+      <div class="st-item"><span class="st-lbl">ZULU</span><span id="st-time" class="st-val">00:00:00Z</span></div>
+    </div>
+
+  </div><!-- end cockpit -->
+</div><!-- end app -->
+
+<!-- Checklist Modal -->
+<div id="checklist-modal" style="display:none">
+  <div id="checklist-inner">
+    <div class="cl-header"><span>D-EGWR PA-28-161 — Normal Procedures</span><button id="cl-close">✕</button></div>
+    <div class="cl-sections">
+      <div class="cl-section">
+        <div class="cl-section-title">PREFLIGHT / COLD &amp; DARK</div>
+        <div class="cl-item"><input type="checkbox"><label>Fuel Selector — BOTH</label></div>
+        <div class="cl-item"><input type="checkbox"><label>Mixture — RICH (full forward)</label></div>
+        <div class="cl-item"><input type="checkbox"><label>Throttle — CLOSED (idle, ~5%)</label></div>
+        <div class="cl-item"><input type="checkbox"><label>Carb Heat — COLD</label></div>
+        <div class="cl-item"><input type="checkbox"><label>All lights — OFF</label></div>
+        <div class="cl-item"><input type="checkbox"><label>Parking Brake — SET</label></div>
+        <div class="cl-item"><input type="checkbox"><label>Circuit Breakers — ALL IN</label></div>
+      </div>
+      <div class="cl-section">
+        <div class="cl-section-title">ENGINE START</div>
+        <div class="cl-item"><input type="checkbox"><label>Fuel Selector — BOTH</label></div>
+        <div class="cl-item"><input type="checkbox"><label>Battery Master — ON</label></div>
+        <div class="cl-item"><input type="checkbox"><label>Alternator — ON</label></div>
+        <div class="cl-item"><input type="checkbox"><label>Avionics Master — OFF (during start)</label></div>
+        <div class="cl-item"><input type="checkbox"><label>Mixture — RICH</label></div>
+        <div class="cl-item"><input type="checkbox"><label>Carb Heat — COLD</label></div>
+        <div class="cl-item"><input type="checkbox"><label>Throttle — 1/4 inch open (~15%)</label></div>
+        <div class="cl-item"><input type="checkbox"><label>Primer — 2–6 pumps (cold engine), lock in</label></div>
+        <div class="cl-item"><input type="checkbox"><label>Magneto — START, release to BOTH on fire</label></div>
+        <div class="cl-item"><input type="checkbox"><label>Oil pressure — check (rise within 30 sec)</label></div>
+        <div class="cl-item"><input type="checkbox"><label>Avionics Master — ON</label></div>
+        <div class="cl-item"><input type="checkbox"><label>G5 PFD / G5 HSI — initialise (30 sec)</label></div>
+        <div class="cl-item"><input type="checkbox"><label>GTX-330 — STBY</label></div>
+        <div class="cl-item"><input type="checkbox"><label>GNS 430 — check frequencies</label></div>
+      </div>
+      <div class="cl-section">
+        <div class="cl-section-title">BEFORE TAKEOFF</div>
+        <div class="cl-item"><input type="checkbox"><label>Fuel Selector — BOTH</label></div>
+        <div class="cl-item"><input type="checkbox"><label>Controls — free and correct</label></div>
+        <div class="cl-item"><input type="checkbox"><label>Trim — set for takeoff (TAXI mark)</label></div>
+        <div class="cl-item"><input type="checkbox"><label>Flaps — UP or 10° T/O</label></div>
+        <div class="cl-item"><input type="checkbox"><label>Magneto check @ 1800 RPM (max 125 RPM drop each mag)</label></div>
+        <div class="cl-item"><input type="checkbox"><label>Carb Heat — ON briefly, note RPM drop, then COLD</label></div>
+        <div class="cl-item"><input type="checkbox"><label>G5 / instruments — set (baro, HDG sync)</label></div>
+        <div class="cl-item"><input type="checkbox"><label>GTX-330 — ALT mode, squawk set</label></div>
+        <div class="cl-item"><input type="checkbox"><label>Nav lights / Strobes / Beacon — ON</label></div>
+        <div class="cl-item"><input type="checkbox"><label>Parking Brake — RELEASE</label></div>
+      </div>
+      <div class="cl-section">
+        <div class="cl-section-title">CRUISE</div>
+        <div class="cl-item"><input type="checkbox"><label>Throttle — 2300–2500 RPM</label></div>
+        <div class="cl-item"><input type="checkbox"><label>Mixture — lean above 3,000 ft AGL</label></div>
+        <div class="cl-item"><input type="checkbox"><label>Oil temp / pressure — in green arcs</label></div>
+        <div class="cl-item"><input type="checkbox"><label>Fuel — check quantity, selector BOTH</label></div>
+        <div class="cl-item"><input type="checkbox"><label>GNS 430 — navigate as required</label></div>
+      </div>
+      <div class="cl-section">
+        <div class="cl-section-title">LANDING</div>
+        <div class="cl-item"><input type="checkbox"><label>Fuel Selector — BOTH</label></div>
+        <div class="cl-item"><input type="checkbox"><label>Mixture — RICH</label></div>
+        <div class="cl-item"><input type="checkbox"><label>Carb Heat — ON (if icing conditions)</label></div>
+        <div class="cl-item"><input type="checkbox"><label>Landing light — ON</label></div>
+        <div class="cl-item"><input type="checkbox"><label>Flaps — 10° base / 25° or 40° short final</label></div>
+        <div class="cl-item"><input type="checkbox"><label>Airspeed — 70 kts final (full flaps)</label></div>
+      </div>
+      <div class="cl-section">
+        <div class="cl-section-title">ENGINE SHUTDOWN</div>
+        <div class="cl-item"><input type="checkbox"><label>Avionics Master — OFF</label></div>
+        <div class="cl-item"><input type="checkbox"><label>Throttle — IDLE</label></div>
+        <div class="cl-item"><input type="checkbox"><label>Mixture — CUT OFF (full aft)</label></div>
+        <div class="cl-item"><input type="checkbox"><label>Magneto — OFF (after engine stops)</label></div>
+        <div class="cl-item"><input type="checkbox"><label>All lights — OFF</label></div>
+        <div class="cl-item"><input type="checkbox"><label>Battery Master — OFF</label></div>
+        <div class="cl-item"><input type="checkbox"><label>Parking Brake — SET</label></div>
+      </div>
+    </div>
+    <div class="cl-footer"><button id="cl-reset-checks">Reset checks</button></div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<script src="js/state.js"></script>
+<script src="js/instruments.js"></script>
+<script src="js/systems.js"></script>
+<script src="js/controls.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,639 @@
+/* ── Reset ──────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --black:        #000;
+  --panel:        #0c0c0c;       /* the real PA-28 panel — almost black */
+  --panel-mid:    #141414;
+  --panel-raised: #1c1c1c;
+  --bezel-out:    #3a3a3a;
+  --bezel-in:     #0a0a0a;
+  --text:         #c0c0c0;
+  --text-dim:     #666;
+  --text-bright:  #e8e8e8;
+  --green:        #00cc44;
+  --amber:        #ffbb00;
+  --red:          #ff2200;
+  --g5-blue:      #1a6aaa;       /* Garmin G5 accent */
+  --radio-bg:     #080e08;
+  --radio-green:  #22dd66;
+  --garmin-gray:  #2a2a2a;
+}
+
+body{
+  background:#060606;
+  min-height:100vh;
+  font-family:'Courier New',Courier,monospace;
+  color:var(--text);
+  user-select:none;
+  -webkit-user-select:none;
+}
+
+/* ── Save Bar ───────────────────────────────────────────── */
+#save-bar{
+  display:flex;justify-content:space-between;align-items:center;
+  background:#060606;border-bottom:1px solid #222;
+  padding:5px 14px;font-size:11px;color:#666;
+  position:sticky;top:0;z-index:100;
+}
+.aircraft-id{color:#888;font-weight:bold;letter-spacing:1px}
+.save-bar-right{display:flex;align-items:center;gap:6px}
+.save-btn{
+  background:#111;border:1px solid #333;color:#888;
+  padding:3px 9px;border-radius:2px;cursor:pointer;
+  font-size:10px;font-family:inherit;transition:all .12s;
+}
+.save-btn:hover{background:#1a1a1a;color:#ccc;border-color:#555}
+.reset-btn{color:#e88;border-color:#522}
+.reset-btn:hover{background:#1a0808}
+#save-slot-select{
+  background:#111;border:1px solid #333;color:#888;
+  padding:2px 4px;border-radius:2px;font-size:10px;
+  font-family:inherit;cursor:pointer;
+}
+#save-status{color:#4d8;font-size:10px;min-width:110px}
+
+/* ── Cockpit outer ──────────────────────────────────────── */
+#cockpit{
+  width:max-content;
+  min-width:max(1200px,85vw);   /* fills ≥85 vw so zoom scales up to 100 vw */
+  margin:0 auto;
+  background:var(--panel);
+  border:1px solid #1a1a1a;
+  border-radius:6px;
+  padding:8px;
+  box-shadow:0 6px 40px rgba(0,0,0,.95),inset 0 1px 0 rgba(255,255,255,.03);
+  transform-origin:top left;
+}
+
+/* ── Glareshield ────────────────────────────────────────── */
+#glareshield{
+  background:linear-gradient(180deg,#080808 0%,#0d0d0d 100%);
+  border-radius:4px 4px 0 0;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:6px 14px;margin-bottom:4px;
+  border-bottom:2px solid #000;
+}
+.ann-group{display:flex;gap:6px;flex-wrap:wrap}
+.annunciator{
+  background:#1a1a1a;color:#3a3a3a;
+  border:1px solid #222;border-radius:2px;
+  padding:3px 8px;font-size:9px;font-weight:bold;letter-spacing:.8px;
+  transition:all .2s;cursor:default;
+}
+.annunciator.active{background:var(--red);color:#fff;border-color:var(--red);box-shadow:0 0 6px var(--red)}
+.annunciator.green.active{background:var(--green);border-color:var(--green);box-shadow:0 0 6px var(--green)}
+.annunciator.warn.active{background:var(--amber);color:#000;border-color:var(--amber);box-shadow:0 0 6px var(--amber)}
+.gs-center{text-align:center}
+.compass-rose-badge{font-size:16px;font-weight:bold;color:#aaa;letter-spacing:3px}
+.gs-model{font-size:8px;color:#444;letter-spacing:2px;margin-top:2px}
+
+/* ── Main Panel ─────────────────────────────────────────── */
+#main-panel{
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  gap:10px;
+  margin-bottom:6px;
+}
+
+/* ── 6-Pack Section ─────────────────────────────────────── */
+#six-pack-section{
+  display:flex;flex-direction:column;gap:6px;
+}
+#six-pack{
+  display:grid;grid-template-columns:repeat(3,auto);
+  gap:16px;           /* must exceed bezel shadow spread (8 px) on each side */
+  background:var(--panel);
+  padding:10px 8px;
+  border:1px solid #111;
+  border-radius:3px;
+}
+
+.instrument-cell{
+  display:flex;flex-direction:column;align-items:center;gap:9px;
+}
+.instr-label-top{
+  font-size:8.5px;color:var(--text-dim);letter-spacing:1px;
+  text-align:center;line-height:1.3;
+  position:relative;z-index:1;   /* render above bezel box-shadow rings */
+  padding:2px 4px;
+}
+.instr-label-top .unit{color:#444;font-size:7px}
+.g5-label{color:#2a7acc}
+
+/* Bezel — chrome-look ring around each instrument */
+.instr-bezel{
+  background:radial-gradient(ellipse at 28% 28%,#4a4a4a 0%,#1a1a1a 50%,#0a0a0a 100%);
+  border-radius:50%;padding:5px;
+  box-shadow:
+    0 0 0 2px #000,
+    0 0 0 6px #2a2a2a,
+    0 0 0 8px #111,
+    inset 0 2px 3px rgba(255,255,255,.06),
+    0 4px 16px rgba(0,0,0,.9);
+}
+.instr-bezel canvas{display:block;border-radius:50%}
+
+/* G5 bezel — slightly greenish tint to the ring */
+.g5-bezel{
+  background:radial-gradient(ellipse at 28% 28%,#3a4a3a 0%,#111a11 50%,#080e08 100%);
+  box-shadow:
+    0 0 0 2px #000,
+    0 0 0 6px #1a2a1a,
+    0 0 0 8px #0a0a0a,
+    inset 0 2px 3px rgba(80,200,80,.04),
+    0 4px 16px rgba(0,0,0,.9);
+}
+
+.baro-knob,.hi-knob{
+  position:absolute;bottom:0;right:0;
+  width:20px;height:20px;
+  background:radial-gradient(circle at 35% 35%,#777,#2a2a2a);
+  border-radius:50%;border:1px solid #444;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;color:#aaa;cursor:pointer;
+  box-shadow:0 2px 4px rgba(0,0,0,.8);
+}
+.baro-knob:hover,.hi-knob:hover{background:radial-gradient(circle at 35% 35%,#999,#444)}
+
+/* Sub-panel below 6-pack */
+#left-sub-panel{
+  background:var(--panel-mid);
+  border:1px solid #111;border-radius:2px;
+  padding:4px 6px;
+}
+.sub-ann-row{display:flex;gap:4px;flex-wrap:wrap}
+.sub-ann{
+  background:#111;color:#333;border:1px solid #1a1a1a;
+  border-radius:2px;padding:2px 6px;font-size:8px;font-weight:bold;
+  letter-spacing:.5px;
+}
+.sub-ann.active-green{color:var(--green);border-color:#0a2a0a}
+
+/* ── Avionics Section ───────────────────────────────────── */
+#avionics-section{
+  background:var(--panel);
+  border:1px solid #0d0d0d;
+  border-radius:3px;
+  padding:6px;
+  display:flex;flex-direction:column;gap:5px;
+  min-width:380px;
+}
+
+.avio-unit{
+  background:var(--garmin-gray);
+  border:1px solid #111;border-radius:2px;
+  padding:6px 10px;
+}
+.avio-label{
+  font-size:8.5px;color:#555;letter-spacing:.8px;
+  margin-bottom:4px;
+}
+
+/* KMA-20 Audio Panel */
+.kma20-body{display:flex;align-items:center;gap:8px}
+.kma20-toggles{display:flex;gap:4px}
+.audio-toggle-group{display:flex;flex-direction:column;align-items:center;gap:1px}
+.at-label{font-size:7px;color:#555}
+.at-btn{
+  width:12px;height:18px;
+  background:#111;border:1px solid #333;border-radius:2px;
+  cursor:pointer;transition:all .1s;
+}
+.at-btn.active-at{background:#1a4a1a;border-color:#2a6a2a;box-shadow:0 0 4px #0a3a0a}
+.at-btn:hover{border-color:#555}
+.kma20-vol{display:flex;align-items:center;gap:4px;margin-left:auto}
+.vol-label{font-size:8px;color:#555}
+.vol-slider{width:60px;height:4px;cursor:pointer;accent-color:var(--green)}
+
+/* Garmin GNS 430 */
+.garmin-430-unit{background:#1e1e1e;border-color:#2a2a2a}
+.g430-body{display:flex;align-items:stretch;gap:4px}
+.g430-left-btns,.g430-right-btns{display:flex;flex-direction:column;gap:2px}
+.g430-btn{
+  background:#2a2a2a;border:1px solid #3a3a3a;color:#aaa;
+  padding:2px 5px;border-radius:1px;cursor:pointer;
+  font-size:8px;font-family:inherit;letter-spacing:.3px;
+  transition:all .1s;
+}
+.g430-btn:hover{background:#3a3a3a;color:#fff}
+.g430-display-area{
+  background:#000a00;border:1px solid #1a3a1a;
+  border-radius:2px;overflow:hidden;flex:1;
+}
+#g430-canvas{display:block}
+.g430-flip{font-size:9px}
+.g430-knobs{margin-top:auto;display:flex;flex-direction:column;align-items:center;gap:2px}
+.g430-mode-label{
+  font-size:7px;color:var(--radio-green);font-weight:bold;
+  letter-spacing:.5px;line-height:1;
+}
+.g430-knob-hint{font-size:5.5px;color:#2a4a2a;letter-spacing:.3px}
+.g430-knob-outer{
+  width:36px;height:36px;
+  background:radial-gradient(circle at 35% 35%,#777,#2a2a2a);
+  border-radius:50%;border:2px solid #555;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+  box-shadow:0 2px 6px rgba(0,0,0,.8);
+  transition:transform .08s ease, box-shadow .15s;
+}
+.g430-knob-outer:hover{
+  box-shadow:0 0 10px rgba(0,220,100,.3),0 2px 6px rgba(0,0,0,.8);
+}
+.g430-knob-inner{
+  width:20px;height:20px;
+  background:radial-gradient(circle at 40% 40%,#555,#1a1a1a);
+  border-radius:50%;border:1px solid #333;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+  color:#777;font-size:10px;
+  transition:transform .08s ease;
+  user-select:none;
+}
+.g430-knob-inner:hover{background:radial-gradient(circle at 40% 40%,#666,#2a2a2a)}
+
+.g430-freqs{
+  background:#060e06;border:1px solid #1a2a1a;
+  border-radius:1px;padding:3px 5px;
+  display:flex;flex-direction:column;gap:2px;
+  margin-top:3px;
+}
+.g430-freq-row{display:flex;align-items:center;gap:5px}
+.gf-label{font-size:9px;color:#555;min-width:28px}
+.gf-act{font-size:13px;color:var(--radio-green);font-weight:bold;min-width:55px}
+.gf-stby{font-size:11px;color:#1a6a1a;min-width:50px}
+.gf-arr{font-size:10px;color:#2a4a2a}
+.gf-flip{
+  background:#1a2a1a;border:1px solid #2a4a2a;color:#4a8a4a;
+  padding:1px 5px;border-radius:1px;cursor:pointer;font-size:8px;
+  font-family:inherit;
+}
+.gf-flip:hover{background:#2a4a2a;color:#8aaa8a}
+
+/* COM2/NAV2 */
+.radio-unit-dark{background:#141414}
+.dual-radio-body{display:flex;flex-direction:column;gap:3px}
+.dr-row{display:flex;align-items:center;gap:5px}
+.dr-label{font-size:8px;color:#555;min-width:32px;font-weight:bold}
+.dr-display{
+  background:#040804;border:1px solid #0d1a0d;
+  border-radius:1px;padding:1px 5px;
+  display:flex;align-items:center;gap:4px;flex:1;
+}
+.radio-active{font-size:12px;color:var(--radio-green);font-weight:bold}
+.radio-standby{font-size:10px;color:#0a4a0a}
+.radio-arrow{font-size:9px;color:#1a3a1a}
+.small-flip{
+  background:#111;border:1px solid #2a4a2a;color:#4a8a4a;
+  padding:1px 4px;border-radius:1px;cursor:pointer;font-size:9px;
+}
+.tune-btns{display:flex;gap:1px}
+.rk-btn{
+  background:#1a1a1a;border:1px solid #333;color:#888;
+  width:18px;height:18px;border-radius:1px;cursor:pointer;
+  font-size:9px;display:flex;align-items:center;justify-content:center;
+  transition:all .1s;
+}
+.rk-btn:hover{background:#2a2a2a;color:#ddd}
+
+/* DME */
+.dme-body{display:flex;align-items:center;gap:8px}
+.dme-display{display:flex;align-items:baseline;gap:6px}
+.dme-val{font-size:16px;color:var(--radio-green);font-weight:bold}
+.dme-unit{font-size:8px;color:#2a6a2a}
+.dme-sel{
+  background:#111;border:1px solid #333;color:#888;
+  font-size:9px;font-family:inherit;padding:2px 3px;cursor:pointer;
+}
+
+/* GTX-330 Transponder */
+.gtx-unit{background:#151515}
+.gtx-body{display:flex;align-items:center;gap:8px}
+.gtx-display{
+  background:#040804;border:1px solid #1a2a1a;
+  border-radius:1px;padding:3px 8px;
+  display:flex;align-items:center;gap:10px;
+}
+.gtx-code{font-size:22px;font-weight:bold;color:var(--radio-green);letter-spacing:3px}
+.gtx-fl{font-size:11px;color:#1a6a1a}
+.gtx-controls{display:flex;align-items:center;gap:5px}
+.gtx-mode-sel{
+  background:#111;border:1px solid #333;color:#888;
+  font-size:9px;font-family:inherit;padding:2px 3px;cursor:pointer;
+}
+.gtx-tune{display:flex;gap:2px}
+.ident-btn{
+  background:#2a0000;border:1px solid #550000;color:#f88;
+  padding:3px 8px;border-radius:2px;cursor:pointer;
+  font-size:9px;font-family:inherit;font-weight:bold;
+}
+.ident-btn:hover{background:#440000;color:#faa}
+.ident-btn.active{background:#ff4400;color:#fff;box-shadow:0 0 6px #f60}
+
+/* PowerFLARM */
+.flarm-unit{background:#0e1a0e}
+.flarm-body{display:flex;align-items:center;gap:8px}
+.flarm-display{
+  background:#040e04;border:1px solid #1a2a1a;
+  border-radius:1px;padding:2px 6px;flex:1;
+}
+.flarm-status{font-size:11px;color:#2a7a2a}
+.flarm-btns{display:flex;align-items:center;gap:6px}
+.flarm-traffic{font-size:10px;color:#1a5a1a}
+
+/* ── Right Section (Switches) ───────────────────────────── */
+#right-section{
+  display:flex;flex-direction:column;gap:7px;
+  min-width:200px;
+}
+.switch-box{
+  background:var(--panel-raised);
+  border:1px solid #222;border-radius:3px;padding:9px 10px;
+}
+.switch-box-title{
+  font-size:8.5px;color:#555;letter-spacing:1px;
+  text-align:center;margin-bottom:6px;font-weight:bold;
+}
+
+/* Toggle switches */
+.switch-row{display:flex;gap:10px;justify-content:center}
+.toggle-group{display:flex;flex-direction:column;align-items:center;gap:2px}
+.toggle-label{font-size:8px;color:#777;letter-spacing:.5px}
+.toggle-sublabel{font-size:7px;color:#444;letter-spacing:.3px}
+.toggle-switch{
+  width:26px;height:50px;
+  background:linear-gradient(180deg,#0a0a0a,#1a1a1a);
+  border:1px solid #444;border-radius:3px;
+  position:relative;cursor:pointer;
+  box-shadow:inset 0 2px 4px rgba(0,0,0,.6);
+  transition:background .15s,border-color .15s;
+}
+.toggle-lever{
+  width:20px;height:20px;
+  background:radial-gradient(circle at 35% 35%,#999,#555);
+  border-radius:2px;
+  position:absolute;left:50%;transform:translateX(-50%);bottom:3px;
+  box-shadow:0 2px 4px rgba(0,0,0,.7);
+  transition:bottom .15s,background .15s;
+}
+.toggle-switch[data-state="on"]{
+  background:linear-gradient(180deg,#051205,#0a2a0a);
+  border-color:#2a5a2a;
+}
+.toggle-switch[data-state="on"] .toggle-lever{
+  bottom:27px;
+  background:radial-gradient(circle at 35% 35%,#7f7,#3a6);
+}
+/* Small variants */
+.toggle-group.sm .toggle-switch{width:20px;height:38px}
+.toggle-group.sm .toggle-lever{width:14px;height:14px}
+.toggle-group.sm .toggle-switch[data-state="on"] .toggle-lever{bottom:20px}
+
+.lights-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
+
+/* Magneto rotary */
+.rotary-wrap{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer}
+#magneto-switch{cursor:pointer;border-radius:50%}
+.rotary-pos{font-size:10px;color:#ccc;letter-spacing:1px;font-weight:bold}
+
+/* Primer */
+.primer-wrap{display:flex;flex-direction:column;align-items:center;gap:4px}
+.primer-btn{
+  background:#1a1a1a;border:1px solid #444;color:#aaa;
+  padding:3px 10px;border-radius:2px;cursor:pointer;
+  font-size:9px;font-family:inherit;letter-spacing:.8px;
+  transition:all .1s;
+}
+.primer-btn:hover:not([disabled]){background:#2a2a2a;color:#fff}
+.primer-btn[disabled]{opacity:.3;cursor:default}
+.primer-count{font-size:8px;color:#555}
+
+/* ── Lower Panel ────────────────────────────────────────── */
+#lower-panel{
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  gap:10px;
+}
+.lower-section-title{
+  font-size:8.5px;color:#444;letter-spacing:1px;
+  margin-bottom:5px;font-weight:bold;
+}
+
+/* Lower left: engine gauges */
+#lower-left{
+  background:var(--panel-mid);
+  border:1px solid #111;border-radius:3px;
+  padding:6px;
+}
+.eng-gauges-grid{
+  display:grid;grid-template-columns:repeat(3,auto);gap:10px;
+}
+.eng-cell{display:flex;flex-direction:column;align-items:center;gap:5px}
+.small-bezel{
+  background:radial-gradient(ellipse at 28% 28%,#3a3a3a 0%,#141414 50%,#080808 100%);
+  border-radius:50%;padding:3px;
+  box-shadow:
+    0 0 0 1px #000,
+    0 0 0 4px #1e1e1e,
+    0 0 0 5px #0a0a0a,
+    inset 0 1px 2px rgba(255,255,255,.04),
+    0 3px 8px rgba(0,0,0,.9);
+}
+.small-bezel canvas{display:block;border-radius:50%}
+.eng-label{font-size:8px;color:#555;text-align:center;letter-spacing:.5px;position:relative;z-index:1;padding-top:2px}
+
+/* Lower center */
+#lower-center{
+  display:flex;flex-direction:column;gap:5px;
+}
+
+/* Fuel selector */
+.fuel-sel-wrap{display:flex;flex-direction:column;align-items:center;gap:3px}
+#fuel-selector{cursor:pointer;border-radius:50%}
+.fuel-sel-label{font-size:11px;color:#ccc;letter-spacing:1px;font-weight:bold}
+
+/* Throttle quadrant */
+#throttle-quadrant{
+  background:var(--panel-mid);border:1px solid #1a1a1a;
+  border-radius:3px;padding:8px;
+}
+.quad-title{font-size:8px;color:#444;text-align:center;margin-bottom:6px;letter-spacing:1px}
+.levers-wrap{display:flex;gap:18px;justify-content:center;align-items:flex-end;height:140px}
+.lever-assy{display:flex;flex-direction:column;align-items:center;gap:3px;height:100%}
+.lever-name{font-size:8px;color:#666;letter-spacing:.5px}
+.lever-track{
+  flex:1;width:22px;
+  background:linear-gradient(180deg,#080808,#111,#080808);
+  border:1px solid #333;border-radius:2px;position:relative;
+  box-shadow:inset 0 0 6px rgba(0,0,0,.9);cursor:ns-resize;
+}
+.lever-knob{
+  position:absolute;left:50%;transform:translateX(-50%);
+  width:36px;display:flex;justify-content:center;
+  cursor:ns-resize;z-index:2;
+}
+.lever-grip{
+  width:34px;height:20px;border-radius:3px;
+  border:1px solid #444;
+  box-shadow:0 2px 5px rgba(0,0,0,.8);
+  cursor:ns-resize;
+}
+.black-grip{background:radial-gradient(circle at 35% 35%,#555,#111)}
+.red-grip  {background:radial-gradient(circle at 35% 35%,#d33,#711)}
+.white-grip{background:radial-gradient(circle at 35% 35%,#ddd,#999)}
+.lever-val{font-size:8px;color:#666}
+
+/* Park brake & Flaps side by side */
+#park-trim-box{display:flex;gap:5px}
+.park-brake-wrap{display:flex;justify-content:center}
+.park-handle{
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  cursor:pointer;padding:5px;
+}
+.park-grip{
+  font-size:20px;color:#777;
+  background:radial-gradient(circle at 35% 35%,#555,#222);
+  border:2px solid #444;border-radius:3px;
+  padding:3px 6px;box-shadow:0 2px 5px rgba(0,0,0,.6);
+  transition:all .15s;
+}
+.park-handle[data-state="on"] .park-grip{color:#f44;border-color:#f44;box-shadow:0 0 6px #f44}
+.park-label{font-size:8px;color:#555;letter-spacing:.5px}
+.park-handle[data-state="on"] .park-label{color:#f44}
+
+/* Flaps */
+.flap-btns{display:flex;gap:3px;justify-content:center;margin-bottom:4px}
+.flap-btn{
+  background:#111;border:1px solid #333;color:#666;
+  padding:3px 5px;border-radius:2px;cursor:pointer;
+  font-size:8px;font-family:inherit;text-align:center;line-height:1.3;
+  transition:all .1s;
+}
+.flap-btn:hover{background:#1a1a1a;color:#aaa}
+.flap-btn.active-flap{background:#0a1a0a;border-color:#1a4a1a;color:var(--green)}
+.flap-bar-wrap{margin-top:2px}
+.flap-bar{
+  height:6px;background:#080808;border:1px solid #222;
+  border-radius:1px;position:relative;margin:2px 0;
+}
+.flap-needle{
+  position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:var(--green);border-radius:1px;transition:left .3s;
+}
+.flap-bar-labels{display:flex;justify-content:space-between;font-size:7px;color:#444}
+
+/* Lower right: CBs + trim */
+#lower-right{
+  background:var(--panel-mid);
+  border:1px solid #111;border-radius:3px;
+  padding:8px;display:flex;flex-direction:column;gap:6px;
+  min-width:160px;
+}
+.cb-grid{
+  display:grid;grid-template-columns:repeat(5,1fr);gap:5px 4px;
+}
+.cb-item{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer}
+.cb-btn{
+  width:16px;height:20px;
+  background:radial-gradient(circle at 35% 30%,#d4c9a8,#7a6e50);
+  border:1px solid #444;border-radius:2px 2px 1px 1px;
+  box-shadow:0 2px 3px rgba(0,0,0,.6);
+  transition:all .1s;
+}
+.cb-item.tripped .cb-btn{
+  background:radial-gradient(circle at 35% 30%,#ff7744,#882200);
+  box-shadow:0 0 4px #f64;transform:translateY(3px);
+}
+.cb-lbl{font-size:7px;color:#666;text-align:center;line-height:1.2;letter-spacing:.2px}
+
+/* Trim */
+.trim-wrap{display:flex;align-items:center;gap:6px}
+.trim-btn{
+  background:#111;border:1px solid #333;color:#777;
+  padding:3px 6px;border-radius:2px;cursor:pointer;
+  font-size:8px;font-family:inherit;white-space:nowrap;
+  transition:all .1s;
+}
+.trim-btn:hover{background:#1a1a1a;color:#bbb}
+.trim-btn:active{background:#080808}
+.trim-track{
+  position:relative;width:16px;height:80px;
+  background:#080808;border:1px solid #222;border-radius:1px;
+  flex-shrink:0;
+}
+.trim-needle{
+  position:absolute;left:0;right:0;height:3px;
+  background:var(--green);border-radius:1px;
+  transform:translateY(-50%);transition:top .2s;
+}
+.trim-marks{
+  position:absolute;right:-24px;top:0;bottom:0;
+  display:flex;flex-direction:column;justify-content:space-between;
+  font-size:7px;color:#444;
+}
+
+/* ── Status Bar ─────────────────────────────────────────── */
+#status-bar{
+  display:flex;gap:0;background:#060606;
+  border-top:1px solid #111;border-radius:0 0 4px 4px;
+  padding:3px 6px;margin-top:3px;overflow-x:auto;
+}
+.st-item{
+  display:flex;flex-direction:column;align-items:center;
+  padding:1px 10px;border-right:1px solid #111;min-width:70px;
+}
+.st-item:last-child{border-right:none}
+.st-lbl{font-size:7px;color:#444;letter-spacing:.8px}
+.st-val{font-size:10px;color:#888;font-family:'Courier New',monospace}
+.st-val.off{color:#2a2a2a}
+.st-val.running{color:var(--green)}
+
+/* ── Checklist Modal ────────────────────────────────────── */
+#checklist-modal{
+  position:fixed;inset:0;background:rgba(0,0,0,.8);
+  z-index:200;display:flex;align-items:center;justify-content:center;
+}
+#checklist-inner{
+  background:#101010;border:1px solid #333;border-radius:6px;
+  width:560px;max-height:88vh;display:flex;flex-direction:column;
+  box-shadow:0 8px 40px rgba(0,0,0,.9);
+}
+.cl-header{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:10px 14px;border-bottom:1px solid #222;
+  font-size:12px;font-weight:bold;color:#bbb;letter-spacing:1px;
+}
+#cl-close{background:none;border:none;color:#666;cursor:pointer;font-size:15px}
+#cl-close:hover{color:#fff}
+.cl-sections{overflow-y:auto;padding:10px 14px;flex:1;display:flex;flex-direction:column;gap:10px}
+.cl-section{display:flex;flex-direction:column;gap:3px}
+.cl-section-title{
+  font-size:9px;color:var(--green);letter-spacing:1.5px;font-weight:bold;
+  padding:3px 0;border-bottom:1px solid #1a3a1a;margin-bottom:3px;
+}
+.cl-item{display:flex;align-items:center;gap:7px;padding:1px 0}
+.cl-item input[type="checkbox"]{width:13px;height:13px;cursor:pointer;accent-color:var(--green)}
+.cl-item label{font-size:11px;color:#999;cursor:pointer;flex:1}
+.cl-item:has(input:checked) label{color:#444;text-decoration:line-through}
+.cl-footer{padding:8px 14px;border-top:1px solid #222;text-align:right}
+#cl-reset-checks{
+  background:#111;border:1px solid #333;color:#777;
+  padding:3px 10px;border-radius:2px;cursor:pointer;font-size:10px;font-family:inherit;
+}
+#cl-reset-checks:hover{background:#1a1a1a;color:#aaa}
+
+/* ── Toast ──────────────────────────────────────────────── */
+#toast{
+  position:fixed;bottom:28px;left:50%;transform:translateX(-50%);
+  background:rgba(0,0,0,.92);color:#ddd;padding:8px 18px;
+  border-radius:16px;font-size:12px;pointer-events:none;
+  opacity:0;transition:opacity .25s;z-index:999;
+  border:1px solid #2a2a2a;box-shadow:0 4px 16px rgba(0,0,0,.7);
+}
+#toast.show{opacity:1}
+
+/* ── Scrollbar ──────────────────────────────────────────── */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:#080808}
+::-webkit-scrollbar-thumb{background:#222;border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:#333}
