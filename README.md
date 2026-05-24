@@ -7,13 +7,11 @@ An interactive, browser-based chairflight trainer for the Piper PA-28-161 Warrio
 ---
 
 ## Screenshots
-.
 
 ![Cockpit overview](screenshots/cockpit_overview.png)
-![Engine start flow active](screenshots/flow_engine_start.png)
-[Failure injection panel](screenshots/failures_panel.png)
-[Before takeoff checks](screenshots/before_takeoff.png)
-[Cruise configuration](screenshots/cruise_fl085.png)
+![Failure injection panel](screenshots/failures_panel.png)
+![Before takeoff checks](screenshots/efore_takeoff.png)
+![Cruise configuration](screenshots/cruise_fl085.png)
 
 ---
 
