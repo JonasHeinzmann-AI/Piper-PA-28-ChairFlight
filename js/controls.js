@@ -260,7 +260,7 @@ function initFlaps() {
 }
 function updateFlapIndicator() {
   const n = document.getElementById('flap-needle');
-  if (n) n.style.left = (state.flaps / 40 * 100) + '%';
+  if (n) n.style.top = (state.flaps / 40 * 100) + '%';
 }
 
 /* ── Trim ────────────────────────────────────────────────── */
@@ -279,6 +279,15 @@ function initTrim() {
   nd.addEventListener('touchstart', e => { e.preventDefault(); trim_dir= 1; }, { passive:false });
   nu.addEventListener('touchend',  () => trim_dir = 0);
   nd.addEventListener('touchend',  () => trim_dir = 0);
+
+  const trimWrap = document.getElementById('trim-wrap');
+  if (trimWrap) trimWrap.addEventListener('wheel', e => {
+    e.preventDefault();
+    if (state.circuitBreakers['TRIM']) return;
+    state.trimPct = Math.max(0, Math.min(100, state.trimPct + (e.deltaY > 0 ? 1 : -1)));
+    const n = document.getElementById('trim-needle');
+    if (n) n.style.top = state.trimPct + '%';
+  }, { passive: false });
 }
 function tickTrim() {
   if (state.circuitBreakers['TRIM']) return;

@@ -39,8 +39,10 @@ body{
 .save-bar-right{display:flex;align-items:center;gap:6px}
 .save-btn{
   background:#111;border:1px solid #333;color:#888;
-  padding:3px 9px;border-radius:2px;cursor:pointer;
+  padding:0 9px;border-radius:2px;cursor:pointer;
   font-size:10px;font-family:inherit;transition:all .12s;
+  height:24px;display:inline-flex;align-items:center;
+  line-height:1;
 }
 .save-btn:hover{background:#1a1a1a;color:#ccc;border-color:#555}
 .reset-btn{color:#e88;border-color:#522}
@@ -87,17 +89,25 @@ body{
 .compass-rose-badge{font-size:16px;font-weight:bold;color:#aaa;letter-spacing:3px}
 .gs-model{font-size:8px;color:#444;letter-spacing:2px;margin-top:2px}
 
+/* ── Cockpit Body — flex row: panels-left + unified right col ── */
+#cockpit-body{
+  display:flex;gap:10px;margin-bottom:6px;
+}
+#panels-left{
+  flex:1;display:flex;flex-direction:column;gap:10px;
+}
+
 /* ── Main Panel ─────────────────────────────────────────── */
 #main-panel{
   display:grid;
-  grid-template-columns:auto 1fr auto;
+  grid-template-columns:auto 1fr;
   gap:10px;
-  margin-bottom:6px;
 }
 
 /* ── 6-Pack Section ─────────────────────────────────────── */
 #six-pack-section{
   display:flex;flex-direction:column;gap:6px;
+  padding-bottom:6px;
 }
 #six-pack{
   display:grid;grid-template-columns:repeat(3,auto);
@@ -169,10 +179,10 @@ body{
 }
 .sub-ann.active-green{color:var(--green);border-color:#0a2a0a}
 
-/* ── VOR Sim strip ──────────────────────────────────────── */
+/* ── VOR Sim strip — pushed to bottom of six-pack-section ── */
 #vor-sim-strip{
   display:flex;align-items:center;gap:8px;
-  padding:4px 6px;margin-top:4px;
+  padding:4px 6px;margin-top:auto;
   background:#080810;border:1px solid #14142a;border-radius:2px;
 }
 .vor-sim-title{
@@ -208,6 +218,9 @@ body{
   background:var(--garmin-gray);
   border:1px solid #111;border-radius:2px;
   padding:6px 10px;
+}
+.avio-unit:not(.flarm-unit){
+  flex:1;display:flex;flex-direction:column;justify-content:center;
 }
 .avio-label{
   font-size:8.5px;color:#555;letter-spacing:.8px;
@@ -356,7 +369,7 @@ body{
 .ident-btn.active{background:#ff4400;color:#fff;box-shadow:0 0 6px #f60}
 
 /* PowerFLARM */
-.flarm-unit{background:#0e1a0e}
+.flarm-unit{background:#0e1a0e;margin-top:auto}
 .flarm-body{display:flex;align-items:center;gap:8px}
 .flarm-display{
   background:#040e04;border:1px solid #1a2a1a;
@@ -366,25 +379,25 @@ body{
 .flarm-btns{display:flex;align-items:center;gap:6px}
 .flarm-traffic{font-size:10px;color:#1a5a1a}
 
-/* ── Right Section (Switches) ───────────────────────────── */
+/* ── Right Section (Switches) — unified column spanning full cockpit height ── */
 #right-section{
-  display:flex;flex-direction:column;gap:7px;
-  min-width:200px;
+  display:flex;flex-direction:column;gap:6px;
+  width:200px;flex-shrink:0;
 }
 .switch-box{
   background:var(--panel-raised);
   border:1px solid #222;border-radius:3px;padding:9px 10px;
 }
 .switch-box-title{
-  font-size:8.5px;color:#555;letter-spacing:1px;
+  font-size:10px;color:#555;letter-spacing:1px;
   text-align:center;margin-bottom:6px;font-weight:bold;
 }
 
 /* Toggle switches */
 .switch-row{display:flex;gap:10px;justify-content:center}
 .toggle-group{display:flex;flex-direction:column;align-items:center;gap:2px}
-.toggle-label{font-size:8px;color:#777;letter-spacing:.5px}
-.toggle-sublabel{font-size:7px;color:#444;letter-spacing:.3px}
+.toggle-label{font-size:9px;color:#777;letter-spacing:.5px}
+.toggle-sublabel{font-size:8px;color:#444;letter-spacing:.3px}
 .toggle-switch{
   width:26px;height:50px;
   background:linear-gradient(180deg,#0a0a0a,#1a1a1a);
@@ -419,7 +432,7 @@ body{
 /* Magneto rotary */
 .rotary-wrap{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer}
 #magneto-switch{cursor:pointer;border-radius:50%}
-.rotary-pos{font-size:10px;color:#ccc;letter-spacing:1px;font-weight:bold}
+.rotary-pos{font-size:12px;color:#ccc;letter-spacing:1px;font-weight:bold}
 
 /* Primer */
 .primer-wrap{display:flex;flex-direction:column;align-items:center;gap:4px}
@@ -436,11 +449,11 @@ body{
 /* ── Lower Panel ────────────────────────────────────────── */
 #lower-panel{
   display:grid;
-  grid-template-columns:auto 1fr auto;
+  grid-template-columns:auto 1fr;
   gap:10px;
 }
 .lower-section-title{
-  font-size:8.5px;color:#444;letter-spacing:1px;
+  font-size:10px;color:#444;letter-spacing:1px;
   margin-bottom:5px;font-weight:bold;
 }
 
@@ -465,11 +478,26 @@ body{
     0 3px 8px rgba(0,0,0,.9);
 }
 .small-bezel canvas{display:block;border-radius:50%}
-.eng-label{font-size:8px;color:#555;text-align:center;letter-spacing:.5px;position:relative;z-index:1;padding-top:2px}
+.eng-label{font-size:10px;color:#555;text-align:center;letter-spacing:.5px;position:relative;z-index:1;padding-top:2px}
 
-/* Lower center */
+/* Lower center — stretches to match engine instruments height */
 #lower-center{
   display:flex;flex-direction:column;gap:5px;
+  align-self:stretch;
+}
+#fuel-throttle-row{
+  display:flex;gap:5px;align-items:stretch;
+  flex:1;
+}
+/* Fuel selector and ignition boxes center their content vertically */
+#fuel-selector-box{
+  display:flex;flex-direction:column;justify-content:center;
+}
+#ignition-box{
+  display:flex;flex-direction:column;justify-content:center;
+}
+#lower-cb-box{
+  flex-shrink:0;
 }
 
 /* Fuel selector */
@@ -477,15 +505,16 @@ body{
 #fuel-selector{cursor:pointer;border-radius:50%}
 .fuel-sel-label{font-size:11px;color:#ccc;letter-spacing:1px;font-weight:bold}
 
-/* Throttle quadrant */
+/* Throttle quadrant — grows to fill fuel-throttle-row height */
 #throttle-quadrant{
   background:var(--panel-mid);border:1px solid #1a1a1a;
   border-radius:3px;padding:8px;
+  display:flex;flex-direction:column;flex:1;
 }
-.quad-title{font-size:8px;color:#444;text-align:center;margin-bottom:6px;letter-spacing:1px}
-.levers-wrap{display:flex;gap:18px;justify-content:center;align-items:flex-end;height:140px}
+.quad-title{font-size:10px;color:#444;text-align:center;margin-bottom:6px;letter-spacing:1px}
+.levers-wrap{display:flex;gap:18px;justify-content:center;align-items:flex-end;flex:1;min-height:140px}
 .lever-assy{display:flex;flex-direction:column;align-items:center;gap:3px;height:100%}
-.lever-name{font-size:8px;color:#666;letter-spacing:.5px}
+.lever-name{font-size:10px;color:#666;letter-spacing:.5px}
 .lever-track{
   flex:1;width:22px;
   background:linear-gradient(180deg,#080808,#111,#080808);
@@ -506,10 +535,11 @@ body{
 .black-grip{background:radial-gradient(circle at 35% 35%,#555,#111)}
 .red-grip  {background:radial-gradient(circle at 35% 35%,#d33,#711)}
 .white-grip{background:radial-gradient(circle at 35% 35%,#ddd,#999)}
-.lever-val{font-size:8px;color:#666}
+.lever-val{font-size:10px;color:#666}
 
-/* Park brake & Flaps side by side */
-#park-trim-box{display:flex;gap:5px}
+/* Park brake & Primer stacked vertically — lives in #lower-right below trim */
+#park-trim-box{display:flex;flex-direction:column;gap:5px}
+.primer-btns-row{display:flex;gap:4px}
 .park-brake-wrap{display:flex;justify-content:center}
 .park-handle{
   display:flex;flex-direction:column;align-items:center;gap:3px;
@@ -526,40 +556,42 @@ body{
 .park-label{font-size:8px;color:#555;letter-spacing:.5px}
 .park-handle[data-state="on"] .park-label{color:#f44}
 
-/* Flaps */
-.flap-btns{display:flex;gap:3px;justify-content:center;margin-bottom:4px}
+/* Flaps — vertical layout */
+#flaps-box{flex:1;display:flex;flex-direction:column}
+.flap-layout{
+  display:flex;gap:6px;flex:1;align-items:stretch;
+}
+.flap-btns{display:flex;flex-direction:column;gap:3px;flex:1}
 .flap-btn{
   background:#111;border:1px solid #333;color:#666;
-  padding:3px 5px;border-radius:2px;cursor:pointer;
-  font-size:8px;font-family:inherit;text-align:center;line-height:1.3;
+  padding:4px 6px;border-radius:2px;cursor:pointer;
+  font-size:9px;font-family:inherit;text-align:left;flex:1;
   transition:all .1s;
 }
 .flap-btn:hover{background:#1a1a1a;color:#aaa}
 .flap-btn.active-flap{background:#0a1a0a;border-color:#1a4a1a;color:var(--green)}
-.flap-bar-wrap{margin-top:2px}
+.flap-bar-wrap{
+  display:flex;gap:3px;align-items:stretch;
+}
 .flap-bar{
-  height:6px;background:#080808;border:1px solid #222;
-  border-radius:1px;position:relative;margin:2px 0;
+  width:8px;background:#080808;border:1px solid #222;
+  border-radius:1px;position:relative;flex-shrink:0;
 }
 .flap-needle{
-  position:absolute;left:0;top:0;bottom:0;width:3px;
-  background:var(--green);border-radius:1px;transition:left .3s;
+  position:absolute;left:0;right:0;height:3px;
+  background:var(--green);border-radius:1px;transition:top .3s;
 }
-.flap-bar-labels{display:flex;justify-content:space-between;font-size:7px;color:#444}
+.flap-bar-labels{
+  display:flex;flex-direction:column;justify-content:space-between;
+  font-size:7px;color:#444;
+}
 
-/* Lower right: CBs + trim */
-#lower-right{
-  background:var(--panel-mid);
-  border:1px solid #111;border-radius:3px;
-  padding:8px;display:flex;flex-direction:column;gap:6px;
-  min-width:160px;
-}
 .cb-grid{
-  display:grid;grid-template-columns:repeat(5,1fr);gap:5px 4px;
+  display:grid;grid-template-columns:repeat(15,1fr);gap:6px 5px;
 }
-.cb-item{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer}
+.cb-item{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer}
 .cb-btn{
-  width:16px;height:20px;
+  width:22px;height:30px;
   background:radial-gradient(circle at 35% 30%,#d4c9a8,#7a6e50);
   border:1px solid #444;border-radius:2px 2px 1px 1px;
   box-shadow:0 2px 3px rgba(0,0,0,.6);
@@ -569,10 +601,11 @@ body{
   background:radial-gradient(circle at 35% 30%,#ff7744,#882200);
   box-shadow:0 0 4px #f64;transform:translateY(3px);
 }
-.cb-lbl{font-size:7px;color:#666;text-align:center;line-height:1.2;letter-spacing:.2px}
+.cb-lbl{font-size:8.5px;color:#666;text-align:center;line-height:1.2;letter-spacing:.2px}
 
 /* Trim */
-.trim-wrap{display:flex;align-items:center;gap:6px}
+.trim-wrap{display:flex;align-items:center;gap:6px;justify-content:center}
+.trim-track-group{display:flex;gap:5px;align-items:stretch}
 .trim-btn{
   background:#111;border:1px solid #333;color:#777;
   padding:3px 6px;border-radius:2px;cursor:pointer;
@@ -592,7 +625,6 @@ body{
   transform:translateY(-50%);transition:top .2s;
 }
 .trim-marks{
-  position:absolute;right:-24px;top:0;bottom:0;
   display:flex;flex-direction:column;justify-content:space-between;
   font-size:7px;color:#444;
 }
@@ -676,7 +708,7 @@ body{
   background:#0a0a14;border:1px solid #1a1a2a;color:#668;
   padding:0 9px;border-radius:2px;cursor:pointer;
   font-size:10px;font-family:'Courier New',monospace;transition:all .12s;
-  height:22px;line-height:22px;
+  height:22px;display:inline-flex;align-items:center;line-height:1;
 }
 .train-btn:hover{background:#12121e;color:#99b;border-color:#333}
 .train-btn-fail{color:#a44;border-color:#3a1a1a}
@@ -762,8 +794,147 @@ body{
   outline:1px solid rgba(0,220,100,.5);
 }
 
+/* ── Flow test mode extras ──────────────────────────────── */
+.fs-test-msg{font-size:9.5px;color:#2a5a2a;font-family:'Courier New',monospace;padding:4px 0;line-height:1.6}
+.fs-test-score{font-size:13px;font-weight:bold;text-align:center;padding:4px 0 6px;font-family:'Courier New',monospace}
+.fs-test-fail{color:#cc4422}
+.fs-test-hint{font-size:8.5px;color:#3a5a3a;font-family:'Courier New',monospace;margin-top:6px;line-height:1.5;border-top:1px solid #0a2a0a;padding-top:4px}
+.flow-finish-btn{
+  margin:0 10px 8px;padding:5px;background:#061806;border:1px solid #1a4a1a;
+  color:#5a9;font-size:9px;font-family:'Courier New',monospace;
+  border-radius:2px;cursor:pointer;letter-spacing:.4px;
+}
+.flow-finish-btn:hover{background:#0a2a0e;color:#8ec}
+
+/* ── Radio Trainer Panel ────────────────────────────────── */
+.train-btn-radio{color:#44a;border-color:#1a1a3a}
+.train-btn-radio:hover{background:#0a0a1e;color:#88aaff;border-color:#2a2a5a}
+
+#radio-panel{
+  position:fixed;bottom:14px;left:14px;width:400px;
+  max-height:calc(100vh - 90px);
+  background:#07070f;border:1px solid #1a1a3a;border-radius:5px;
+  z-index:195;box-shadow:0 8px 40px rgba(0,0,20,.97);
+  flex-direction:column;overflow:hidden;
+  font-family:'Courier New',monospace;
+}
+.rp-header{
+  display:flex;justify-content:space-between;align-items:flex-start;
+  padding:8px 12px;border-bottom:1px solid #111128;background:#050510;flex-shrink:0;
+}
+.rp-header-left{display:flex;flex-direction:column;gap:1px}
+.rp-title{font-size:11px;font-weight:bold;color:#88aaff;letter-spacing:.5px}
+.rp-sub{font-size:8.5px;color:#334;letter-spacing:.3px}
+.rp-header-right{display:flex;gap:3px;align-items:center;flex-shrink:0}
+.rp-icon-btn{
+  background:none;border:none;cursor:pointer;font-size:14px;
+  color:#445;padding:2px 4px;border-radius:2px;line-height:1;
+}
+.rp-icon-btn:hover{color:#99b;background:#111}
+.rp-prog-wrap{
+  display:flex;align-items:center;gap:6px;
+  padding:4px 12px;border-bottom:1px solid #0a0a20;flex-shrink:0;
+}
+.rp-prog-track{flex:1;height:3px;background:#0a0a20;border-radius:2px;overflow:hidden}
+.rp-prog-bar{height:100%;background:#3366ee;transition:width .3s;border-radius:2px}
+.rp-phase-lbl{font-size:8.5px;color:#2a2a5a;white-space:nowrap;max-width:150px;overflow:hidden;text-overflow:ellipsis}
+.rp-prog-lbl{font-size:8.5px;color:#2a2a5a;white-space:nowrap;flex-shrink:0}
+
+/* Script transcript view */
+.rp-script{
+  overflow-y:auto;padding:8px 12px;
+  display:flex;flex-direction:column;gap:3px;
+  min-height:70px;max-height:180px;flex-shrink:0;
+}
+.rs-phase{
+  font-size:8px;color:#1e1e44;text-transform:uppercase;
+  letter-spacing:1.2px;margin-top:3px;
+}
+.rs-info{font-size:8.5px;color:#223;font-style:italic}
+.rs-dim{opacity:.25}
+.rs-atc,.rs-you{display:flex;gap:5px;font-size:9.5px}
+.rs-done{opacity:.35}
+.rs-pend{opacity:.22}
+.rs-cur{opacity:1}
+.rs-who{min-width:38px;font-weight:bold;flex-shrink:0;font-size:9px;padding-top:1px}
+.rs-atc .rs-who{color:#4477cc}
+.rs-you .rs-who{color:#33aa66}
+.rs-atc .rs-txt{color:#7799bb}
+.rs-you .rs-txt{color:#669977}
+.rs-atc.rs-cur .rs-who{color:#6699ff}
+.rs-atc.rs-cur .rs-txt{color:#aac8ff;font-weight:bold}
+.rs-you.rs-cur .rs-who{color:#55ee99}
+.rs-you.rs-cur .rs-txt{color:#aaeebb;font-weight:bold}
+
+/* Current line area */
+.rp-current{
+  padding:8px 12px;border-top:1px solid #0a0a20;
+  min-height:64px;flex-shrink:0;
+}
+.rp-cur-lbl{font-size:8px;color:#2a2a5a;letter-spacing:.8px;text-transform:uppercase;margin-bottom:3px}
+.rp-cur-text{font-size:10.5px;color:#8899cc;line-height:1.5;margin-bottom:3px}
+.rp-revealed{color:#99eebb;border-left:2px solid #33aa66;padding-left:5px}
+.rp-hidden{color:#1e1e44;font-style:italic}
+.rp-transcript{font-size:9px;color:#667788;margin-top:4px;font-style:italic}
+.rp-score{font-size:10px;font-weight:bold;margin-top:2px}
+.rp-cur-status{font-size:8.5px;color:#334;margin-top:3px}
+.rp-speaking{color:#4477ff}
+.rp-loading{color:#886622}
+.rp-listening{color:#ff5533}
+@keyframes rpPulse{0%,100%{opacity:1}50%{opacity:.4}}
+.rp-speaking,.rp-listening{animation:rpPulse .7s ease-in-out infinite}
+.rp-complete{font-size:13px;color:#33cc77;font-weight:bold;text-align:center;padding:10px 0}
+
+/* Controls bar */
+.rp-controls{
+  display:flex;align-items:center;gap:5px;
+  padding:6px 12px;border-top:1px solid #0a0a20;
+  background:#04040c;flex-shrink:0;
+}
+.rc-btn{
+  background:#09091a;border:1px solid #1a1a3a;color:#667;
+  padding:0 10px;height:22px;line-height:22px;border-radius:2px;
+  cursor:pointer;font-size:10px;font-family:'Courier New',monospace;
+  white-space:nowrap;transition:all .12s;
+}
+.rc-btn:hover{background:#111128;color:#aab;border-color:#2a2a5a}
+.rc-btn:disabled{opacity:.35;cursor:default}
+.rc-btn-done{background:#06120a;border-color:#1a4a2a;color:#4a9}
+.rc-btn-done:hover{background:#0a1e12;color:#6ec;border-color:#2a6a3a}
+.rc-btn-next{border-color:#2a2a5a;color:#668}
+.rc-btn-next:hover{background:#111128;color:#99b}
+.rc-btn-skip{color:#333;border-color:#0d0d20}
+.rc-btn-skip:hover{color:#556}
+.rc-btn-active{border-color:#cc3311;color:#ee5533;background:#150505}
+.rc-btn-active:hover{background:#200808}
+.rc-btn-dim{opacity:.35;cursor:not-allowed}
+.rc-spacer{flex:1}
+
 /* ── Scrollbar ──────────────────────────────────────────── */
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-track{background:#080808}
 ::-webkit-scrollbar-thumb{background:#222;border-radius:3px}
 ::-webkit-scrollbar-thumb:hover{background:#333}
+
+/* ── Exterior Lights Viz Panel ──────────────────────────── */
+#lights-viz-panel{
+  position:fixed;
+  bottom:42px;right:14px;
+  background:#060606;
+  border:1px solid #2a2a2a;border-radius:6px;
+  z-index:160;
+  box-shadow:0 6px 24px rgba(0,0,0,.85);
+  overflow:hidden;
+}
+.lvp-header{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:5px 10px;border-bottom:1px solid #181818;
+  background:#0d0d0d;
+}
+.lvp-title{font-size:9px;color:#555;letter-spacing:1.5px;font-weight:bold}
+#lvp-close{
+  background:none;border:none;color:#333;cursor:pointer;
+  font-size:14px;line-height:1;padding:0 2px;
+}
+#lvp-close:hover{color:#aaa}
+#lights-viz-canvas{display:block}

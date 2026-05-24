@@ -170,10 +170,12 @@ function tickEngine(dt) {
     state.engine.oilPressurePsi = Math.max(0, state.engine.oilPressurePsi - 10 * dt);
   }
 
-  // Fuel flow
+  // Fuel flow — O-320 data: ~1.0 GPH idle, ~8.5 GPH at 2450 RPM rich, ~10.5 GPH full throttle
   if (state.engine.running && fuelAvail) {
-    const throttleFactor = 0.3 + throttle * 0.7;
-    state.engine.fuelFlowGph = ENG.FUEL_FLOW_CRUISE_GPH * throttleFactor * mixture;
+    const rpmNorm  = Math.max(0, (state.engine.rpm - ENG.IDLE_RPM) / (ENG.MAX_RPM - ENG.IDLE_RPM));
+    const baseFlow = 1.0 + Math.pow(rpmNorm, 0.9) * 9.5;          // 1.0→10.5 GPH
+    const mixFactor = mixture < 0.05 ? 0 : 0.78 + mixture * 0.22; // lean saves ~22%; cutoff=0
+    state.engine.fuelFlowGph = baseFlow * mixFactor;
   } else {
     state.engine.fuelFlowGph = 0;
   }

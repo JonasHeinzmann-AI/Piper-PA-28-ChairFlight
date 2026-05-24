@@ -21,6 +21,7 @@
       <button id="btn-reset" class="save-btn reset-btn">↺ Cold &amp; Dark</button>
       <button id="btn-checklist" class="save-btn">☑ Checklist</button>
       <button id="btn-help" class="save-btn">? Keys</button>
+      <button id="btn-lights-viz" class="save-btn">✈ Ext Lights</button>
       <span id="save-status"></span>
     </div>
   </div>
@@ -44,9 +45,23 @@
         <option value="">— select flow —</option>
         <option value="engine-start">Engine Start</option>
         <option value="before-takeoff">Before Takeoff</option>
+        <option value="cruise">Cruise Checks</option>
+        <option value="pre-landing">Pre-Landing</option>
+        <option value="after-landing">After Landing</option>
         <option value="shutdown">Engine Shutdown</option>
+        <option value="engine-failure">Engine Failure ⚠</option>
+      </select>
+      <select id="flow-mode" class="train-sel" title="Guided: highlights controls · Test: no hints, scored at end">
+        <option value="guided">Guided</option>
+        <option value="test">Test</option>
       </select>
       <button id="btn-flow-start" class="train-btn">▶ Start</button>
+    </div>
+    <div class="train-sep"></div>
+    <div class="train-group">
+      <span class="train-lbl">RADIO TRAINER</span>
+      <select id="radio-route-sel" class="train-sel"><option value="">— select route —</option></select>
+      <button id="btn-radio-start" class="train-btn train-btn-radio">🎙 Start</button>
     </div>
   </div>
 
@@ -70,6 +85,10 @@
         <div class="annunciator green" id="ann-gear" title="Gear Down &amp; Locked">GEAR DOWN</div>
       </div>
     </div>
+
+    <!-- ── COCKPIT BODY ─────────────────────────────────────── -->
+    <div id="cockpit-body">
+      <div id="panels-left">
 
     <!-- ── MAIN PANEL ─────────────────────────────────────── -->
     <div id="main-panel">
@@ -130,20 +149,21 @@
             <div class="sub-ann" id="sub-ann-stall" title="Stall">STALL</div>
             <div class="sub-ann" id="sub-ann-door" title="Door">DOOR</div>
           </div>
-          <div id="vor-sim-strip">
-            <span class="vor-sim-title">NAV1 VOR SIM</span>
-            <div class="vor-sim-ctrl">
-              <span class="vor-sim-lbl">OBS</span>
-              <span class="vor-sim-val" id="obs-val">270°</span>
-              <div class="vor-sim-knob" id="obs-knob" title="Scroll = set OBS course · Click = sync to heading">⟲</div>
-            </div>
-            <div class="vor-sim-ctrl">
-              <span class="vor-sim-lbl">RADIAL</span>
-              <span class="vor-sim-val" id="vor1-radial-val">090°</span>
-              <div class="vor-sim-knob" id="vor1-radial-knob" title="Scroll = set simulated VOR radial (your position)">⟲</div>
-            </div>
-            <span class="vor-sim-hint">CDI on HSI ↑</span>
+        </div>
+
+        <div id="vor-sim-strip">
+          <span class="vor-sim-title">NAV1 VOR SIM</span>
+          <div class="vor-sim-ctrl">
+            <span class="vor-sim-lbl">OBS</span>
+            <span class="vor-sim-val" id="obs-val">270°</span>
+            <div class="vor-sim-knob" id="obs-knob" title="Scroll = set OBS course · Click = sync to heading">⟲</div>
           </div>
+          <div class="vor-sim-ctrl">
+            <span class="vor-sim-lbl">RADIAL</span>
+            <span class="vor-sim-val" id="vor1-radial-val">090°</span>
+            <div class="vor-sim-knob" id="vor1-radial-knob" title="Scroll = set simulated VOR radial (your position)">⟲</div>
+          </div>
+          <span class="vor-sim-hint">CDI on HSI ↑</span>
         </div>
 
       </div><!-- end six-pack-section -->
@@ -299,92 +319,6 @@
 
       </div><!-- end avionics-section -->
 
-      <!-- RIGHT: Switches Panel -->
-      <div id="right-section">
-
-        <!-- MASTER SWITCHES -->
-        <div class="switch-box">
-          <div class="switch-box-title">MASTER SWITCH</div>
-          <div class="switch-row">
-            <div class="toggle-group">
-              <div class="toggle-label">BAT</div>
-              <div class="toggle-switch" id="sw-battery" data-state="off"><div class="toggle-lever"></div></div>
-              <div class="toggle-sublabel">BATT</div>
-            </div>
-            <div class="toggle-group">
-              <div class="toggle-label">ALT</div>
-              <div class="toggle-switch" id="sw-alternator" data-state="off"><div class="toggle-lever"></div></div>
-              <div class="toggle-sublabel">ALT</div>
-            </div>
-          </div>
-          <div class="switch-row" style="margin-top:6px">
-            <div class="toggle-group" style="width:100%">
-              <div class="toggle-label">AVIONICS</div>
-              <div class="toggle-switch" id="sw-avionics" data-state="off"><div class="toggle-lever"></div></div>
-              <div class="toggle-sublabel">AV MSTR</div>
-            </div>
-          </div>
-          <div class="switch-row" style="margin-top:6px">
-            <div class="toggle-group" style="width:100%">
-              <div class="toggle-label">FUEL PUMP</div>
-              <div class="toggle-switch" id="sw-fuel-pump" data-state="off"><div class="toggle-lever"></div></div>
-              <div class="toggle-sublabel">ELEC</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- MAGNETO -->
-        <div class="switch-box">
-          <div class="switch-box-title">IGNITION</div>
-          <div class="rotary-wrap" id="magneto-wrap">
-            <canvas id="magneto-switch" width="110" height="110" title="L-click=advance, R-click=retard, Scroll"></canvas>
-            <div class="rotary-pos" id="mag-label">OFF</div>
-          </div>
-        </div>
-
-        <!-- PRIMER -->
-        <div class="switch-box">
-          <div class="switch-box-title">PRIMER</div>
-          <div class="primer-wrap">
-            <button class="primer-btn" id="primer-pull">PULL / PUMP</button>
-            <div class="primer-count" id="primer-count">0 pumps</div>
-            <button class="primer-btn locked" id="primer-push" disabled>PUSH IN &amp; LOCK</button>
-          </div>
-        </div>
-
-        <!-- LIGHTS -->
-        <div class="switch-box">
-          <div class="switch-box-title">LIGHTS</div>
-          <div class="lights-grid">
-            <div class="toggle-group sm">
-              <div class="toggle-label">NAV</div>
-              <div class="toggle-switch" id="sw-nav-light" data-state="off"><div class="toggle-lever"></div></div>
-            </div>
-            <div class="toggle-group sm">
-              <div class="toggle-label">LAND</div>
-              <div class="toggle-switch" id="sw-land-light" data-state="off"><div class="toggle-lever"></div></div>
-            </div>
-            <div class="toggle-group sm">
-              <div class="toggle-label">BCN</div>
-              <div class="toggle-switch" id="sw-beacon" data-state="off"><div class="toggle-lever"></div></div>
-            </div>
-            <div class="toggle-group sm">
-              <div class="toggle-label">STRB</div>
-              <div class="toggle-switch" id="sw-strobes" data-state="off"><div class="toggle-lever"></div></div>
-            </div>
-            <div class="toggle-group sm">
-              <div class="toggle-label">PANEL</div>
-              <div class="toggle-switch" id="sw-panel-light" data-state="off"><div class="toggle-lever"></div></div>
-            </div>
-            <div class="toggle-group sm">
-              <div class="toggle-label">PITOT</div>
-              <div class="toggle-switch" id="sw-pitot-heat" data-state="off"><div class="toggle-lever"></div></div>
-            </div>
-          </div>
-        </div>
-
-      </div><!-- end right-section -->
-
     </div><!-- end main-panel -->
 
     <!-- ── LOWER PANEL ────────────────────────────────────── -->
@@ -421,56 +355,159 @@
         </div>
       </div>
 
-      <!-- LOWER CENTER: Fuel selector + Throttle quadrant -->
+      <!-- LOWER CENTER: Fuel selector + Throttle quadrant + Circuit Breakers -->
       <div id="lower-center">
 
-        <div id="fuel-selector-box" class="switch-box">
-          <div class="switch-box-title">FUEL SELECTOR</div>
-          <div class="fuel-sel-wrap" id="fuel-sel-wrap">
-            <canvas id="fuel-selector" width="110" height="110" title="Click or scroll to change"></canvas>
-            <div class="fuel-sel-label" id="fuel-sel-label">BOTH</div>
+        <div id="fuel-throttle-row">
+
+          <div id="fuel-selector-box" class="switch-box">
+            <div class="switch-box-title">FUEL SELECTOR</div>
+            <div class="fuel-sel-wrap" id="fuel-sel-wrap">
+              <canvas id="fuel-selector" width="110" height="110" title="Click or scroll to change"></canvas>
+              <div class="fuel-sel-label" id="fuel-sel-label">BOTH</div>
+            </div>
+          </div>
+
+          <div id="throttle-quadrant">
+            <div class="quad-title">THROTTLE QUADRANT</div>
+            <div class="levers-wrap">
+
+              <div class="lever-assy">
+                <div class="lever-name">THROTTLE</div>
+                <div class="lever-track" id="throttle-track">
+                  <div class="lever-knob" id="throttle-lever" style="bottom:5%">
+                    <div class="lever-grip black-grip"></div>
+                  </div>
+                </div>
+                <div class="lever-val" id="throttle-pct">5%</div>
+              </div>
+
+              <div class="lever-assy">
+                <div class="lever-name">MIXTURE</div>
+                <div class="lever-track" id="mixture-track">
+                  <div class="lever-knob" id="mixture-lever" style="bottom:90%">
+                    <div class="lever-grip red-grip"></div>
+                  </div>
+                </div>
+                <div class="lever-val" id="mixture-pct">RICH</div>
+              </div>
+
+              <div class="lever-assy">
+                <div class="lever-name">CARB HEAT</div>
+                <div class="lever-track" id="carbheat-track">
+                  <div class="lever-knob" id="carbheat-lever" style="bottom:5%">
+                    <div class="lever-grip white-grip"></div>
+                  </div>
+                </div>
+                <div class="lever-val" id="carbheat-pct">COLD</div>
+              </div>
+
+            </div>
+          </div>
+
+          <div id="ignition-box" class="switch-box">
+            <div class="switch-box-title">IGNITION</div>
+            <div class="rotary-wrap" id="magneto-wrap">
+              <canvas id="magneto-switch" width="110" height="110" title="L-click=advance, R-click=retard, Scroll"></canvas>
+              <div class="rotary-pos" id="mag-label">OFF</div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="switch-box" id="lower-cb-box">
+          <div class="lower-section-title">CIRCUIT BREAKERS</div>
+          <div class="cb-grid" id="cb-panel"></div>
+        </div>
+
+      </div><!-- end lower-center -->
+
+    </div><!-- end lower-panel -->
+      </div><!-- end panels-left -->
+
+      <!-- RIGHT: Switches + Controls (unified column) -->
+      <div id="right-section">
+
+        <!-- MASTER SWITCHES -->
+        <div class="switch-box">
+          <div class="switch-box-title">MASTER SWITCH</div>
+          <div class="switch-row">
+            <div class="toggle-group">
+              <div class="toggle-label">BAT</div>
+              <div class="toggle-switch" id="sw-battery" data-state="off"><div class="toggle-lever"></div></div>
+              <div class="toggle-sublabel">BATT</div>
+            </div>
+            <div class="toggle-group">
+              <div class="toggle-label">ALT</div>
+              <div class="toggle-switch" id="sw-alternator" data-state="off"><div class="toggle-lever"></div></div>
+              <div class="toggle-sublabel">ALT</div>
+            </div>
+          </div>
+          <div class="switch-row" style="margin-top:6px">
+            <div class="toggle-group">
+              <div class="toggle-label">AVIONICS</div>
+              <div class="toggle-switch" id="sw-avionics" data-state="off"><div class="toggle-lever"></div></div>
+              <div class="toggle-sublabel">AV MSTR</div>
+            </div>
+            <div class="toggle-group">
+              <div class="toggle-label">FUEL PUMP</div>
+              <div class="toggle-switch" id="sw-fuel-pump" data-state="off"><div class="toggle-lever"></div></div>
+              <div class="toggle-sublabel">ELEC</div>
+            </div>
           </div>
         </div>
 
-        <div id="throttle-quadrant">
-          <div class="quad-title">THROTTLE QUADRANT</div>
-          <div class="levers-wrap">
-
-            <div class="lever-assy">
-              <div class="lever-name">THROTTLE</div>
-              <div class="lever-track" id="throttle-track">
-                <div class="lever-knob" id="throttle-lever" style="bottom:5%">
-                  <div class="lever-grip black-grip"></div>
-                </div>
-              </div>
-              <div class="lever-val" id="throttle-pct">5%</div>
+        <!-- LIGHTS -->
+        <div class="switch-box">
+          <div class="switch-box-title">LIGHTS</div>
+          <div class="lights-grid">
+            <div class="toggle-group sm">
+              <div class="toggle-label">NAV</div>
+              <div class="toggle-switch" id="sw-nav-light" data-state="off"><div class="toggle-lever"></div></div>
             </div>
-
-            <div class="lever-assy">
-              <div class="lever-name">MIXTURE</div>
-              <div class="lever-track" id="mixture-track">
-                <div class="lever-knob" id="mixture-lever" style="bottom:90%">
-                  <div class="lever-grip red-grip"></div>
-                </div>
-              </div>
-              <div class="lever-val" id="mixture-pct">RICH</div>
+            <div class="toggle-group sm">
+              <div class="toggle-label">LAND</div>
+              <div class="toggle-switch" id="sw-land-light" data-state="off"><div class="toggle-lever"></div></div>
             </div>
-
-            <div class="lever-assy">
-              <div class="lever-name">CARB HEAT</div>
-              <div class="lever-track" id="carbheat-track">
-                <div class="lever-knob" id="carbheat-lever" style="bottom:5%">
-                  <div class="lever-grip white-grip"></div>
-                </div>
-              </div>
-              <div class="lever-val" id="carbheat-pct">COLD</div>
+            <div class="toggle-group sm">
+              <div class="toggle-label">BCN</div>
+              <div class="toggle-switch" id="sw-beacon" data-state="off"><div class="toggle-lever"></div></div>
             </div>
-
+            <div class="toggle-group sm">
+              <div class="toggle-label">STRB</div>
+              <div class="toggle-switch" id="sw-strobes" data-state="off"><div class="toggle-lever"></div></div>
+            </div>
+            <div class="toggle-group sm">
+              <div class="toggle-label">PANEL</div>
+              <div class="toggle-switch" id="sw-panel-light" data-state="off"><div class="toggle-lever"></div></div>
+            </div>
+            <div class="toggle-group sm">
+              <div class="toggle-label">PITOT</div>
+              <div class="toggle-switch" id="sw-pitot-heat" data-state="off"><div class="toggle-lever"></div></div>
+            </div>
           </div>
         </div>
 
+        <!-- ELEVATOR TRIM -->
+        <div class="switch-box">
+          <div class="switch-box-title">ELEVATOR TRIM</div>
+          <div class="trim-wrap" id="trim-wrap">
+            <button class="trim-btn" id="trim-nose-up">▲ NOSE UP</button>
+            <div class="trim-track-group">
+              <div class="trim-track" id="trim-track">
+                <div class="trim-needle" id="trim-needle" style="top:50%"></div>
+              </div>
+              <div class="trim-marks">
+                <span>NU</span><span>TAXI</span><span>ND</span>
+              </div>
+            </div>
+            <button class="trim-btn" id="trim-nose-dn">▼ NOSE DN</button>
+          </div>
+        </div>
+
+        <!-- PARK BRAKE + PRIMER -->
         <div id="park-trim-box">
-          <div class="switch-box" style="flex:1">
+          <div class="switch-box">
             <div class="switch-box-title">PARK BRAKE</div>
             <div class="park-brake-wrap">
               <div class="park-handle" id="park-brake" data-state="off" title="Click to toggle">
@@ -479,44 +516,38 @@
               </div>
             </div>
           </div>
-          <div class="switch-box" style="flex:1">
-            <div class="switch-box-title">FLAPS</div>
+          <div class="switch-box">
+            <div class="switch-box-title">PRIMER</div>
+            <div class="primer-wrap">
+              <div class="primer-btns-row">
+                <button class="primer-btn" id="primer-pull">PULL / PUMP</button>
+                <button class="primer-btn locked" id="primer-push" disabled>LOCK</button>
+              </div>
+              <div class="primer-count" id="primer-count">0 pumps</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- FLAPS -->
+        <div class="switch-box" id="flaps-box">
+          <div class="switch-box-title">FLAPS</div>
+          <div class="flap-layout">
             <div class="flap-btns">
-              <button class="flap-btn active-flap" data-flaps="0">UP<br><small>0°</small></button>
-              <button class="flap-btn" data-flaps="10">T/O<br><small>10°</small></button>
-              <button class="flap-btn" data-flaps="25">APP<br><small>25°</small></button>
-              <button class="flap-btn" data-flaps="40">LDG<br><small>40°</small></button>
+              <button class="flap-btn active-flap" data-flaps="0">UP 0°</button>
+              <button class="flap-btn" data-flaps="10">T/O 10°</button>
+              <button class="flap-btn" data-flaps="25">APP 25°</button>
+              <button class="flap-btn" data-flaps="40">LDG 40°</button>
             </div>
             <div class="flap-bar-wrap">
               <div class="flap-bar"><div class="flap-needle" id="flap-needle"></div></div>
-              <div class="flap-bar-labels"><span>0</span><span>10</span><span>25</span><span>40</span></div>
+              <div class="flap-bar-labels"><span>0°</span><span>10°</span><span>25°</span><span>40°</span></div>
             </div>
           </div>
         </div>
 
-      </div><!-- end lower-center -->
+      </div><!-- end right-section -->
 
-      <!-- LOWER RIGHT: Circuit Breakers + Trim -->
-      <div id="lower-right">
-        <div class="lower-section-title">CIRCUIT BREAKERS</div>
-        <div class="cb-grid" id="cb-panel"></div>
-
-        <div class="switch-box" style="margin-top:8px">
-          <div class="switch-box-title">ELEVATOR TRIM</div>
-          <div class="trim-wrap">
-            <button class="trim-btn" id="trim-nose-up">▲ NOSE UP</button>
-            <div class="trim-track">
-              <div class="trim-needle" id="trim-needle" style="top:50%"></div>
-              <div class="trim-marks">
-                <span>NU</span><span>TAXI</span><span>ND</span>
-              </div>
-            </div>
-            <button class="trim-btn" id="trim-nose-dn">▼ NOSE DN</button>
-          </div>
-        </div>
-      </div>
-
-    </div><!-- end lower-panel -->
+    </div><!-- end cockpit-body -->
 
     <!-- STATUS BAR -->
     <div id="status-bar">
@@ -556,6 +587,28 @@
     <div class="flow-prog-track"><div id="flow-bar" class="flow-prog-bar"></div></div>
     <span id="flow-prog-lbl">0 / 0</span>
   </div>
+</div>
+
+<!-- Radio Trainer Panel -->
+<div id="radio-panel" style="display:none">
+  <div class="rp-header">
+    <div class="rp-header-left">
+      <div id="rp-title" class="rp-title">—</div>
+      <div id="rp-sub" class="rp-sub"></div>
+    </div>
+    <div class="rp-header-right">
+      <button id="rp-tts-btn" class="rp-icon-btn" title="Toggle ATC voice">🔊</button>
+      <button id="rp-close" class="rp-icon-btn" title="Close">✕</button>
+    </div>
+  </div>
+  <div class="rp-prog-wrap">
+    <div class="rp-prog-track"><div id="rp-prog-bar" class="rp-prog-bar"></div></div>
+    <span id="rp-phase" class="rp-phase-lbl"></span>
+    <span id="rp-prog-lbl" class="rp-prog-lbl">0 / 0</span>
+  </div>
+  <div id="rp-script" class="rp-script"></div>
+  <div id="rp-current" class="rp-current"></div>
+  <div id="rp-controls" class="rp-controls"></div>
 </div>
 
 <!-- Checklist Modal -->
@@ -640,6 +693,16 @@
 <!-- Toast -->
 <div id="toast"></div>
 
+<!-- Exterior Lights Visualizer Panel -->
+<div id="lights-viz-panel" style="display:none">
+  <div class="lvp-header">
+    <span class="lvp-title">✈ EXTERIOR LIGHTS</span>
+    <button id="lvp-close">✕</button>
+  </div>
+  <canvas id="lights-viz-canvas" width="260" height="225"></canvas>
+</div>
+
+<script src="js/config.js"></script>
 <script src="js/audio.js"></script>
 <script src="js/state.js"></script>
 <script src="js/instruments.js"></script>
@@ -648,6 +711,8 @@
 <script src="js/scenarios.js"></script>
 <script src="js/failures.js"></script>
 <script src="js/flows.js"></script>
+<script src="js/radio.js"></script>
+<script src="js/lights_viz.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>

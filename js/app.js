@@ -24,6 +24,8 @@ window.addEventListener('DOMContentLoaded', () => {
   initScenarios();
   initFailures();
   initFlows();
+  initRadio();
+  initLightsViz();
   drawAllInstruments();
   fitCockpit();
   window.addEventListener('resize', fitCockpit);
