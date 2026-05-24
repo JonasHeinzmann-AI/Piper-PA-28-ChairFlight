@@ -21,6 +21,9 @@ function fitCockpit() {
 window.addEventListener('DOMContentLoaded', () => {
   initControls();
   initAudio();
+  initScenarios();
+  initFailures();
+  initFlows();
   drawAllInstruments();
   fitCockpit();
   window.addEventListener('resize', fitCockpit);
@@ -31,6 +34,7 @@ function loop(nowMs) {
   systemsTick(nowMs);
   tickTrim();
   tickAudio();
+  tickFlow();
   drawAllInstruments();
   updateAvionicsState();
   updateGTX();

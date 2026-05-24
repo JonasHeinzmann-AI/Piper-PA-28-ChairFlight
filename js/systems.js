@@ -79,14 +79,20 @@ function tickEngine(dt) {
   // Fuel available?
   const fuelAvail = fuelIsAvailable();
 
+  // Effective magneto firing count — accounts for failure injection flags
+  // START (4) fires both mags just like BOTH (3)
+  const lFiring   = (mag === 2 || mag === 3 || mag === 4) && !state.engine.magFailL;
+  const rFiring   = (mag === 1 || mag === 3 || mag === 4) && !state.engine.magFailR;
+  const activeMags = (lFiring ? 1 : 0) + (rFiring ? 1 : 0);
+
   // Compute target RPM
   let targetRpm = 0;
   if (state.engine.running && fuelAvail) {
     const carbPenalty    = state.engine.carbHeat ? 0.95 : 1.0;
     const mixturePenalty = mixture < 0.15 ? 0 : (mixture < 0.5 ? 0.85 : 1.0);
     const richPenalty    = (mixture > 0.9 && state.flight.altitudeFt > 8000) ? 0.97 : 1.0;
-    // Single-magneto operation (L or R only): ~6% drop — ~100 RPM at runup, visible at idle too
-    const magPenalty     = (mag === 1 || mag === 2) ? 0.94 : 1.0;
+    // 2 mags = normal, 1 mag = ~6% drop, 0 mags = engine stops (handled below)
+    const magPenalty     = activeMags >= 2 ? 1.0 : (activeMags === 1 ? 0.94 : 0);
     targetRpm = (ENG.IDLE_RPM + (ENG.MAX_RPM - ENG.IDLE_RPM) * Math.pow(throttle, 0.8))
       * carbPenalty * mixturePenalty * richPenalty * magPenalty;
   }
@@ -104,8 +110,9 @@ function tickEngine(dt) {
 
     const hasFuel = fuelAvail;
     const warmEnough = state.engine.oilTempF >= 60;
+    const magsOk = activeMags > 0;  // at least one magneto must be functional
 
-    if (engineStartTimer > 1.5 && hasFuel && warmEnough) {
+    if (engineStartTimer > 1.5 && hasFuel && warmEnough && magsOk) {
       // Engine catches — auto-return magneto from START to BOTH
       state.engine.running = true;
       state.engine.starting = false;
@@ -117,7 +124,8 @@ function tickEngine(dt) {
       state.engine.starting = false;
       engineStartTimer = 0;
       state.engine.rpm = 0;
-      showToast('Engine failed to start. Check primer / mixture / fuel.');
+      if (!magsOk) showToast('Engine failed to start — magneto failure!');
+      else         showToast('Engine failed to start. Check mixture / fuel.');
     }
   }
 
@@ -126,12 +134,15 @@ function tickEngine(dt) {
   }
 
   // Engine stops if mags off, fuel gone, mixture cut, or battery off during start
+  // Note: mag===4 (START) never triggers deadMag — both mags fire in START position
   if (state.engine.running) {
-    if (mag === 0 || !fuelAvail || mixture < 0.1) {
+    const deadMag = activeMags === 0 && mag > 0 && mag !== 4;
+    if (mag === 0 || !fuelAvail || mixture < 0.1 || deadMag) {
       state.engine.running = false;
-      if (mag === 0) showToast('Magnetos OFF — engine stopped.');
-      if (!fuelAvail) showToast('Fuel exhausted — engine stopped!');
+      if (mag === 0)    showToast('Magnetos OFF — engine stopped.');
+      if (!fuelAvail)   showToast('Fuel exhausted — engine stopped!');
       if (mixture < 0.1) showToast('Mixture cut — engine stopped.');
+      if (deadMag)      showToast('Dead magneto — engine stopped.');
     }
   }
 
@@ -224,9 +235,10 @@ function updateStatusBar() {
   else if (state.engine.starting)  set('st-engine', 'STARTING', 'st-val');
   else                             set('st-engine', 'OFF',      'st-val off');
 
+  const indicatedAlt = state.flight.altitudeFt + (state.flight.baroInHg - 29.92) * 1000;
   set('st-rpm',    Math.round(state.engine.rpm).toLocaleString());
   set('st-ias',    Math.round(state.flight.iasKts) + ' kt');
-  set('st-alt',    Math.round(state.flight.altitudeFt).toLocaleString() + ' ft');
+  set('st-alt',    Math.round(indicatedAlt).toLocaleString() + ' ft');
   set('st-hdg',    Math.round(state.flight.headingDeg % 360).toString().padStart(3,'0') + '°');
   set('st-fuel-l', state.fuel.leftGal.toFixed(1) + ' gal');
   set('st-fuel-r', state.fuel.rightGal.toFixed(1) + ' gal');

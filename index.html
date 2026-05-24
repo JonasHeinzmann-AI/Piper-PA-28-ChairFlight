@@ -25,6 +25,31 @@
     </div>
   </div>
 
+  <!-- ── Training Bar ────────────────────────────────────────── -->
+  <div id="training-bar">
+    <div class="train-group">
+      <span class="train-lbl">SCENARIO</span>
+      <select id="scenario-select" class="train-sel"><option value="">— select —</option></select>
+      <button id="btn-scenario" class="train-btn">▶ Load</button>
+    </div>
+    <div class="train-sep"></div>
+    <div class="train-group">
+      <span class="train-lbl">FAILURES</span>
+      <button id="btn-failures" class="train-btn train-btn-fail">⚡ Inject</button>
+    </div>
+    <div class="train-sep"></div>
+    <div class="train-group">
+      <span class="train-lbl">PROCEDURE FLOW</span>
+      <select id="flow-select" class="train-sel">
+        <option value="">— select flow —</option>
+        <option value="engine-start">Engine Start</option>
+        <option value="before-takeoff">Before Takeoff</option>
+        <option value="shutdown">Engine Shutdown</option>
+      </select>
+      <button id="btn-flow-start" class="train-btn">▶ Start</button>
+    </div>
+  </div>
+
   <!-- ── Cockpit ───────────────────────────────────────────── -->
   <div id="cockpit">
 
@@ -311,7 +336,7 @@
         <!-- MAGNETO -->
         <div class="switch-box">
           <div class="switch-box-title">IGNITION</div>
-          <div class="rotary-wrap">
+          <div class="rotary-wrap" id="magneto-wrap">
             <canvas id="magneto-switch" width="110" height="110" title="L-click=advance, R-click=retard, Scroll"></canvas>
             <div class="rotary-pos" id="mag-label">OFF</div>
           </div>
@@ -401,7 +426,7 @@
 
         <div id="fuel-selector-box" class="switch-box">
           <div class="switch-box-title">FUEL SELECTOR</div>
-          <div class="fuel-sel-wrap">
+          <div class="fuel-sel-wrap" id="fuel-sel-wrap">
             <canvas id="fuel-selector" width="110" height="110" title="Click or scroll to change"></canvas>
             <div class="fuel-sel-label" id="fuel-sel-label">BOTH</div>
           </div>
@@ -510,6 +535,29 @@
   </div><!-- end cockpit -->
 </div><!-- end app -->
 
+<!-- Failures Panel -->
+<div id="failures-panel" style="display:none">
+  <div class="fail-header">
+    <span>⚡ INSTRUCTOR — FAILURE INJECTION</span>
+    <button id="fail-close">✕</button>
+  </div>
+  <div class="fail-grid"></div>
+  <button id="fail-clear-all" class="fail-clear-btn">CLEAR ALL FAILURES</button>
+</div>
+
+<!-- Flow Panel -->
+<div id="flow-panel" style="display:none">
+  <div class="flow-header">
+    <span id="flow-title">—</span>
+    <button id="flow-stop">✕ Stop</button>
+  </div>
+  <div id="flow-steps"></div>
+  <div class="flow-prog-wrap">
+    <div class="flow-prog-track"><div id="flow-bar" class="flow-prog-bar"></div></div>
+    <span id="flow-prog-lbl">0 / 0</span>
+  </div>
+</div>
+
 <!-- Checklist Modal -->
 <div id="checklist-modal" style="display:none">
   <div id="checklist-inner">
@@ -597,6 +645,9 @@
 <script src="js/instruments.js"></script>
 <script src="js/systems.js"></script>
 <script src="js/controls.js"></script>
+<script src="js/scenarios.js"></script>
+<script src="js/failures.js"></script>
+<script src="js/flows.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>

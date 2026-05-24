@@ -776,9 +776,10 @@ function drawAllInstruments() {
     const av  = state.electrical.avionics && !state.circuitBreakers['AVIONICS'];
     const cbOk = name => !state.circuitBreakers[name];
 
+    const indicatedAlt = state.flight.altitudeFt + (state.flight.baroInHg - 29.92) * 1000;
     drawASI(pwr, state.flight.iasKts);
     drawG5PFD(pwr, state.flight.pitchDeg, state.flight.bankDeg);
-    drawALT(pwr, state.flight.altitudeFt, state.flight.baroInHg);
+    drawALT(pwr, indicatedAlt, state.flight.baroInHg);
     drawTC(pwr && cbOk('TURN COORD'), state.flight.bankDeg, 0);
     drawG5HSI(pwr && cbOk('GYRO'), state.flight.headingDeg);
     drawVSI(pwr, state.flight.vsiFpm);

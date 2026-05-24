@@ -16,6 +16,8 @@ const DEFAULT_STATE = {
     carbHeat: false,
     primerPumps: 0,
     primerOut: false,
+    magFailL: false,  // left magneto failed (failure injection)
+    magFailR: false,  // right magneto failed
     running: false,
     starting: false,
     rpm: 0,
